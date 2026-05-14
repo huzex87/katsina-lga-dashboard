@@ -16,15 +16,20 @@ interface Props {
 
 export function DashboardMap({ projects }: Props) {
   const mapRef = useRef<MapRef>(null);
-  const { filters, selectProject, setProjects, getVisibleProjects } = useDashboardStore();
+  const { filters, selectProject, setProjects, projects: storeProjects } = useDashboardStore();
 
   useEffect(() => {
     setProjects(projects);
   }, [projects, setProjects]);
 
-  const visibleProjects = useMemo(() => getVisibleProjects(), [
-    projects, filters.categories, filters.year, getVisibleProjects
-  ]);
+  const visibleProjects = useMemo(() =>
+    storeProjects.filter(
+      (p) =>
+        filters.categories.has(p.category) &&
+        (filters.year === 'all' || p.completion_date?.startsWith(filters.year))
+    ),
+    [storeProjects, filters.categories, filters.year]
+  );
 
   const handleMapClick = useCallback(() => {
     selectProject(null);
