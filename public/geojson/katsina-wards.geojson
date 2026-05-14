@@ -1,0 +1,125 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": { "id": 1, "name": "Ward 1", "name_ha": "Ungwa ta 1" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.5600, 12.9600], [7.6100, 12.9600], [7.6100, 13.0100], [7.5600, 13.0100], [7.5600, 12.9600]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 2, "name": "Ward 2", "name_ha": "Ungwa ta 2" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.6100, 12.9600], [7.6600, 12.9600], [7.6600, 13.0100], [7.6100, 13.0100], [7.6100, 12.9600]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 3, "name": "Ward 3", "name_ha": "Ungwa ta 3" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.5100, 12.9100], [7.5600, 12.9100], [7.5600, 12.9600], [7.5100, 12.9600], [7.5100, 12.9100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 4, "name": "Ward 4", "name_ha": "Ungwa ta 4" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.5600, 12.9100], [7.6100, 12.9100], [7.6100, 12.9600], [7.5600, 12.9600], [7.5600, 12.9100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 5, "name": "Ward 5", "name_ha": "Ungwa ta 5" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.6100, 12.9100], [7.6600, 12.9100], [7.6600, 12.9600], [7.6100, 12.9600], [7.6100, 12.9100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 6, "name": "Ward 6", "name_ha": "Ungwa ta 6" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.6600, 12.9100], [7.7100, 12.9100], [7.7100, 12.9600], [7.6600, 12.9600], [7.6600, 12.9100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 7, "name": "Ward 7", "name_ha": "Ungwa ta 7" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.5100, 13.0100], [7.5600, 13.0100], [7.5600, 13.0600], [7.5100, 13.0600], [7.5100, 13.0100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 8, "name": "Ward 8", "name_ha": "Ungwa ta 8" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.5600, 13.0100], [7.6100, 13.0100], [7.6100, 13.0600], [7.5600, 13.0600], [7.5600, 13.0100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 9, "name": "Ward 9", "name_ha": "Ungwa ta 9" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.6100, 13.0100], [7.6600, 13.0100], [7.6600, 13.0600], [7.6100, 13.0600], [7.6100, 13.0100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 10, "name": "Ward 10", "name_ha": "Ungwa ta 10" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.6600, 13.0100], [7.7100, 13.0100], [7.7100, 13.0600], [7.6600, 13.0600], [7.6600, 13.0100]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 11, "name": "Ward 11", "name_ha": "Ungwa ta 11" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.4800, 12.9600], [7.5100, 12.9600], [7.5100, 13.0600], [7.4800, 13.0600], [7.4800, 12.9600]
+        ]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": { "id": 12, "name": "Ward 12", "name_ha": "Ungwa ta 12" },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [7.7100, 12.9100], [7.7600, 12.9100], [7.7600, 13.0600], [7.7100, 13.0600], [7.7100, 12.9100]
+        ]]
+      }
+    }
+  ]
+}

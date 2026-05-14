@@ -1,26 +1,107 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ─── Tailwind v4 theme tokens ─────────────────────────────────────────── */
+@theme {
+  /* Colors */
+  --color-teal:        #1D9B8A;
+  --color-teal-light:  #25C4AE;
+  --color-teal-dark:   #145F55;
+  --color-teal-bg:     #EAF6F4;
+  --color-gold:        #F5A623;
+  --color-gold-dark:   #C07C0D;
+  --color-navy:        #0A1628;
+  --color-navy-mid:    #0F1F3A;
+  --color-red-pin:     #E24B4A;
+  --color-grey-border: #D0D7DE;
+  --color-grey-bg:     #F4F6F8;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  /* Fonts */
+  --font-sans: 'Inter', 'Noto Sans', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  /* Animations */
+  --animate-pin-pulse: pinPulse 2.2s ease-out infinite;
+  --animate-counter:   counterUp 0.8s ease-out;
+  --animate-slide-in:  slideInRight 0.38s cubic-bezier(0.22,1,0.36,1);
+  --animate-slide-up:  slideInUp 0.38s cubic-bezier(0.22,1,0.36,1);
+  --animate-fade-in:   fadeIn 0.3s ease-out;
+  --animate-glow:      borderGlow 3s ease-in-out infinite;
+
+  /* Keyframes */
+  @keyframes pinPulse {
+    0%   { transform: scale(1); opacity: 0.7; }
+    100% { transform: scale(2.5); opacity: 0; }
+  }
+  @keyframes counterUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to   { transform: translateX(0); }
+  }
+  @keyframes slideInUp {
+    from { transform: translateY(100%); }
+    to   { transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes borderGlow {
+    0%, 100% { opacity: 0.3; }
+    50%       { opacity: 0.8; }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ─── Base styles ───────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-navy);
+    color: white;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar       { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(29,155,138,0.3); border-radius: 99px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgba(29,155,138,0.6); }
+
+  /* Reduced-motion override */
+  @media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
 }
+
+/* ─── Utilities ─────────────────────────────────────────────────────────── */
+@layer utilities {
+  .scrollbar-none {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+}
+
+/* ─── Mapbox GL overrides ───────────────────────────────────────────────── */
+.mapboxgl-ctrl-group {
+  background: rgba(15,31,58,0.9) !important;
+  border: 1px solid rgba(255,255,255,0.1) !important;
+  border-radius: 8px !important;
+  backdrop-filter: blur(12px) !important;
+}
+.mapboxgl-ctrl-group button       { color: white !important; }
+.mapboxgl-ctrl-group button:hover { background: rgba(255,255,255,0.08) !important; }
