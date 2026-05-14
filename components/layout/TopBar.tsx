@@ -7,30 +7,40 @@ import { formatNaira, computeStats, animateCounter } from '@/lib/utils';
 import { useReducedMotion } from 'framer-motion';
 
 export function TopBar() {
-  const { getVisibleProjects, filters } = useDashboardStore();
-  const visible = getVisibleProjects();
-  const stats = computeStats(visible);
+  const projects = useDashboardStore((s) => s.projects);
+  const filters = useDashboardStore((s) => s.filters);
   const prefersReduced = useReducedMotion();
 
-  const [displayStats, setDisplayStats] = useState({ total: 0, communities: 0, investment: 0, wardsCovered: 0 });
+  const visibleProjects = projects.filter(
+    (p) =>
+      filters.categories.has(p.category) &&
+      (filters.year === 'all' || p.completion_date?.startsWith(filters.year))
+  );
+  const stats = computeStats(visibleProjects);
+
+  const prevStats = useRef(stats);
+  const [displayStats, setDisplayStats] = useState(stats);
 
   useEffect(() => {
+    const prev = prevStats.current;
+    prevStats.current = stats;
+
     if (prefersReduced) {
       setDisplayStats(stats);
       return;
     }
-    const dur = 800;
-    animateCounter(0, stats.total, dur, (v) => setDisplayStats((s) => ({ ...s, total: v })));
-    animateCounter(0, stats.communities, dur, (v) => setDisplayStats((s) => ({ ...s, communities: v })));
-    animateCounter(0, stats.investment, dur, (v) => setDisplayStats((s) => ({ ...s, investment: v })));
-    animateCounter(0, stats.wardsCovered, dur, (v) => setDisplayStats((s) => ({ ...s, wardsCovered: v })));
-  }, [stats.total, stats.communities, stats.investment, stats.wardsCovered]);
+    const dur = 600;
+    animateCounter(prev.total, stats.total, dur, (v) => setDisplayStats((s) => ({ ...s, total: v })));
+    animateCounter(prev.communities, stats.communities, dur, (v) => setDisplayStats((s) => ({ ...s, communities: v })));
+    animateCounter(prev.investment, stats.investment, dur, (v) => setDisplayStats((s) => ({ ...s, investment: v })));
+    animateCounter(prev.wardsCovered, stats.wardsCovered, dur, (v) => setDisplayStats((s) => ({ ...s, wardsCovered: v })));
+  }, [stats.total, stats.communities, stats.investment, stats.wardsCovered, prefersReduced]);
 
   const items = [
-    { icon: BarChart3, label: 'Total Projects', value: displayStats.total.toString(), color: 'text-teal' },
-    { icon: MapPin, label: 'Communities Served', value: displayStats.communities.toString(), color: 'text-teal-light' },
-    { icon: Landmark, label: 'Investment', value: formatNaira(displayStats.investment), color: 'text-gold' },
-    { icon: Users, label: 'Wards Covered', value: `${displayStats.wardsCovered}/12`, color: 'text-white' },
+    { icon: BarChart3, label: 'Projects', fullLabel: 'Total Projects', value: displayStats.total.toString(), color: 'text-teal' },
+    { icon: MapPin, label: 'Communities', fullLabel: 'Communities Served', value: displayStats.communities.toString(), color: 'text-teal-light' },
+    { icon: Landmark, label: 'Investment', fullLabel: 'Total Investment', value: formatNaira(displayStats.investment), color: 'text-gold' },
+    { icon: Users, label: 'Wards', fullLabel: 'Wards Covered', value: `${displayStats.wardsCovered}/12`, color: 'text-white' },
   ];
 
   return (
@@ -38,45 +48,61 @@ export function TopBar() {
       className="fixed top-0 left-0 right-0 z-20 border-b border-white/10"
       style={{ backdropFilter: 'blur(16px)', background: 'rgba(10,22,40,0.92)' }}
     >
-      <div className="flex items-center justify-between px-4 h-14">
+      {/* Skip to main content — visible on focus for keyboard users */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg focus:text-sm focus:font-semibold"
+      >
+        Skip to main content
+      </a>
+
+      <div className="flex items-center justify-between px-3 sm:px-4 h-14 gap-2">
         {/* Branding */}
-        <div className="flex items-center gap-3 flex-shrink-0">
-          <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-teal/20 border border-teal/30">
-            <TrendingUp size={16} className="text-teal" />
+        <div className="flex items-center gap-2.5 flex-shrink-0">
+          <div
+            className="flex items-center justify-center w-8 h-8 rounded-lg border border-teal/30 flex-shrink-0"
+            style={{ background: 'rgba(29,155,138,0.15)' }}
+            aria-hidden="true"
+          >
+            <TrendingUp size={15} className="text-teal" />
           </div>
           <div className="hidden sm:block">
-            <p className="text-xs font-bold text-white leading-none">KATSINA LGA</p>
-            <p className="text-[10px] text-white/40 leading-none mt-0.5">Project Impact Dashboard</p>
+            <p className="text-xs font-bold text-white tracking-wide leading-none">KATSINA LGA</p>
+            <p className="text-[10px] text-white/40 leading-none mt-0.5 tracking-wide">Project Impact Dashboard</p>
           </div>
         </div>
 
-        {/* Stats — scrollable on mobile */}
-        <div className="flex items-center gap-1 overflow-x-auto scrollbar-none ml-4" role="region" aria-label="Dashboard statistics">
-          {items.map(({ icon: Icon, label, value, color }) => (
+        {/* Stats */}
+        <div
+          className="flex items-center gap-1 overflow-x-auto scrollbar-none flex-1 justify-center sm:justify-end"
+          role="region"
+          aria-label="Dashboard statistics"
+        >
+          {items.map(({ icon: Icon, label, fullLabel, value, color }) => (
             <div
               key={label}
-              className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-white/8 flex-shrink-0"
+              className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-white/[0.06] flex-shrink-0"
               style={{ background: 'rgba(255,255,255,0.04)' }}
             >
               <Icon size={13} className={color} aria-hidden="true" />
               <div>
                 <p
-                  className={`text-sm font-bold tabular-nums ${color}`}
+                  className={`text-sm font-bold tabular-nums leading-none ${color}`}
                   aria-live="polite"
-                  aria-label={`${label}: ${value}`}
+                  aria-label={`${fullLabel}: ${value}`}
                 >
                   {value}
                 </p>
-                <p className="text-[10px] text-white/40 hidden md:block leading-none">{label}</p>
+                <p className="text-[10px] text-white/35 hidden sm:block leading-none mt-0.5">{label}</p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Language toggle placeholder */}
-        <div className="flex-shrink-0 ml-3">
+        {/* Language toggle */}
+        <div className="flex-shrink-0">
           <button
-            className="text-xs px-2.5 py-1.5 rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-white/20 transition-colors min-h-[36px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+            className="text-xs px-3 py-2.5 rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-white/25 hover:bg-white/5 transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer"
             aria-label="Toggle language between English and Hausa"
           >
             EN / HA

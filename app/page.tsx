@@ -22,7 +22,7 @@ export default async function DashboardPage() {
   const projects = await getProjects();
 
   return (
-    <main className="h-screen w-screen overflow-hidden bg-navy relative">
+    <main id="main-content" className="h-screen w-screen overflow-hidden bg-navy relative">
       <TopBar />
 
       <div className="flex h-full pt-14 pb-14">
