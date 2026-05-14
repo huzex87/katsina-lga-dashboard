@@ -1,16 +1,9 @@
-import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
 import { TopBar } from '@/components/layout/TopBar';
 import { FilterSidebar } from '@/components/layout/FilterSidebar';
 import { TimelineBar } from '@/components/layout/TimelineBar';
 import { ProjectDetailPanel } from '@/components/panels/ProjectDetailPanel';
+import { DashboardMapWrapper } from '@/components/map/DashboardMapWrapper';
 import type { Project } from '@/types/project';
-
-// Mapbox requires browser APIs — load client-only
-const DashboardMap = dynamic(
-  () => import('@/components/map/DashboardMap').then((m) => ({ default: m.DashboardMap })),
-  { ssr: false, loading: () => <MapSkeleton /> }
-);
 
 async function getProjects(): Promise<Project[]> {
   try {
@@ -37,26 +30,13 @@ export default async function DashboardPage() {
 
         {/* Map canvas — fills remaining space */}
         <div className="flex-1 md:ml-56 relative">
-          <Suspense fallback={<MapSkeleton />}>
-            <DashboardMap projects={projects} />
-          </Suspense>
+          <DashboardMapWrapper projects={projects} />
         </div>
       </div>
 
       <TimelineBar />
       <ProjectDetailPanel />
     </main>
-  );
-}
-
-function MapSkeleton() {
-  return (
-    <div className="w-full h-full bg-navy-mid flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <div className="w-12 h-12 rounded-full border-2 border-teal border-t-transparent animate-spin" />
-        <p className="text-sm text-white/40">Loading map…</p>
-      </div>
-    </div>
   );
 }
 
