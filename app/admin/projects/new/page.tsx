@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { ALL_CATEGORIES, CATEGORY_LABELS } from '@/types/project';
+import { ALL_CATEGORIES, CATEGORY_LABELS, WARD_NAMES } from '@/types/project';
 
 export default function NewProjectPage() {
   const router = useRouter();
@@ -25,8 +25,8 @@ export default function NewProjectPage() {
           latitude: parseFloat(data.latitude as string),
           longitude: parseFloat(data.longitude as string),
           beneficiaries: parseInt(data.beneficiaries as string),
-          budget_ngn: Math.round(parseFloat(data.budget_ngn as string) * 100),
-          expenditure_ngn: Math.round(parseFloat(data.expenditure_ngn as string) * 100),
+          budget_ngn: Math.round(parseFloat(data.budget_ngn as string)),
+          expenditure_ngn: Math.round(parseFloat(data.expenditure_ngn as string)),
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -85,8 +85,8 @@ export default function NewProjectPage() {
             <label htmlFor="ward_id" className={labelClass}>Ward *</label>
             <select id="ward_id" name="ward_id" required className={`${inputClass} cursor-pointer`}>
               <option value="">Select ward…</option>
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1} style={{ background: '#0F1F3A' }}>Ward {i + 1}</option>
+              {Object.entries(WARD_NAMES).map(([id, name]) => (
+                <option key={id} value={id} style={{ background: '#0F1F3A' }}>{name}</option>
               ))}
             </select>
           </div>

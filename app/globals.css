@@ -1,5 +1,39 @@
 @import "tailwindcss";
 
+/* ─── Theme CSS custom properties ──────────────────────────────────────── */
+:root {
+  /* Dark mode defaults */
+  --surface:       rgba(10,22,40,0.90);
+  --surface-mid:   rgba(15,31,58,0.94);
+  --surface-deep:  rgba(8,18,34,0.94);
+  --surface-card:  rgba(255,255,255,0.035);
+  --surface-input: rgba(255,255,255,0.05);
+  --surface-hover: rgba(255,255,255,0.07);
+  --fg-1: #ffffff;
+  --fg-2: rgba(255,255,255,0.60);
+  --fg-3: rgba(255,255,255,0.40);
+  --fg-4: rgba(255,255,255,0.25);
+  --border:        rgba(255,255,255,0.10);
+  --border-hover:  rgba(255,255,255,0.20);
+  --shadow:        rgba(0,0,0,0.45);
+}
+
+[data-theme="light"] {
+  --surface:       rgba(255,255,255,0.88);
+  --surface-mid:   rgba(248,250,255,0.93);
+  --surface-deep:  rgba(236,243,255,0.97);
+  --surface-card:  rgba(10,22,40,0.04);
+  --surface-input: rgba(10,22,40,0.05);
+  --surface-hover: rgba(10,22,40,0.05);
+  --fg-1: #0a1628;
+  --fg-2: rgba(10,22,40,0.65);
+  --fg-3: rgba(10,22,40,0.48);
+  --fg-4: rgba(10,22,40,0.30);
+  --border:        rgba(10,22,40,0.10);
+  --border-hover:  rgba(10,22,40,0.18);
+  --shadow:        rgba(10,22,40,0.12);
+}
+
 /* ─── Tailwind v4 theme tokens ─────────────────────────────────────────── */
 @theme {
   /* Colors */
@@ -70,6 +104,16 @@
     color: white;
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  [data-theme="light"] body {
+    background-color: #EEF3FA;
+    color: #0a1628;
+  }
+
+  [data-theme="light"] .bg-navy {
+    background-color: #EEF3FA;
   }
 
   * {
@@ -138,10 +182,29 @@
 
 /* ─── Mapbox GL overrides ───────────────────────────────────────────────── */
 .mapboxgl-ctrl-group {
-  background: rgba(15,31,58,0.9) !important;
-  border: 1px solid rgba(255,255,255,0.1) !important;
+  background: var(--surface-mid) !important;
+  border: 1px solid var(--border) !important;
   border-radius: 8px !important;
   backdrop-filter: blur(12px) !important;
 }
-.mapboxgl-ctrl-group button       { color: white !important; }
-.mapboxgl-ctrl-group button:hover { background: rgba(255,255,255,0.08) !important; }
+.mapboxgl-ctrl-group button       { color: var(--fg-1) !important; }
+.mapboxgl-ctrl-group button:hover { background: var(--surface-hover) !important; }
+
+/* Push NavigationControl above TimelineBar */
+.mapboxgl-ctrl-bottom-left { bottom: 68px !important; left: 8px !important; }
+
+/* ─── Light mode glass panel overrides ─────────────────────────────────── */
+/* Text-color cascade for elements with data-glass attribute */
+[data-theme="light"] [data-glass] [class*="text-white/"] { color: var(--fg-2); }
+[data-theme="light"] [data-glass] [class~="text-white"]  { color: var(--fg-1); }
+
+/* Tailwind white bg variants inside glass panels */
+[data-theme="light"] [data-glass] [class*="bg-white/"]     { background-color: var(--surface-hover); }
+[data-theme="light"] [data-glass] [class*="border-white/"] { border-color: var(--border); }
+
+/* Scrollbar light mode */
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(10,22,40,0.18); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(10,22,40,0.32); }
+
+/* Mapbox light mode */
+[data-theme="light"] .mapboxgl-ctrl-group { box-shadow: 0 2px 12px rgba(10,22,40,0.12) !important; }

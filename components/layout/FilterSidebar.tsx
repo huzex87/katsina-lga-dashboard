@@ -111,8 +111,9 @@ export function FilterSidebar() {
     <>
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex fixed left-0 top-14 bottom-14 w-56 flex-col z-10 border-r border-white/10"
-        style={{ backdropFilter: 'blur(16px)', background: 'rgba(10,22,40,0.88)' }}
+        data-glass=""
+        className="hidden md:flex fixed left-0 top-14 bottom-14 w-56 flex-col z-10 border-r"
+        style={{ backdropFilter: 'blur(16px)', background: 'var(--surface)', borderColor: 'var(--border)', transition: 'background 0.25s ease' }}
         aria-label="Sector filter sidebar"
       >
         <SidebarContent />
@@ -152,8 +153,9 @@ export function FilterSidebar() {
               aria-hidden="true"
             />
             <motion.div
-              className="fixed bottom-0 left-0 right-0 h-[78vh] z-40 md:hidden rounded-t-2xl border-t border-white/10 overflow-hidden flex flex-col"
-              style={{ backdropFilter: 'blur(20px)', background: 'rgba(10,22,40,0.97)' }}
+              data-glass=""
+              className="fixed bottom-0 left-0 right-0 h-[78vh] z-40 md:hidden rounded-t-2xl border-t overflow-hidden flex flex-col"
+              style={{ backdropFilter: 'blur(20px)', background: 'var(--surface-mid)', borderColor: 'var(--border)', transition: 'background 0.25s ease' }}
               initial={prefersReduced ? {} : { y: '100%' }}
               animate={{ y: 0 }}
               exit={prefersReduced ? {} : { y: '100%' }}

@@ -89,10 +89,11 @@ export function ProjectDetailPanel() {
           <motion.div
             ref={panelRef}
             role="dialog"
+            data-glass=""
             aria-modal="true"
             aria-label={`Project details: ${selectedProject.title_en}`}
-            className="hidden md:flex fixed right-0 top-0 h-full w-[340px] flex-col z-40 overflow-hidden border-l border-white/10 shadow-2xl"
-            style={{ backdropFilter: 'blur(20px)', background: 'rgba(15,31,58,0.94)' }}
+            className="hidden md:flex fixed right-0 top-0 h-full w-[340px] flex-col z-40 overflow-hidden border-l shadow-2xl"
+            style={{ backdropFilter: 'blur(20px)', background: 'var(--surface-mid)', borderColor: 'var(--border)', transition: 'background 0.25s ease' }}
             variants={panelVariants}
             initial="hiddenDesktop"
             animate="visibleDesktop"
@@ -114,8 +115,9 @@ export function ProjectDetailPanel() {
             role="dialog"
             aria-modal="true"
             aria-label={`Project details: ${selectedProject.title_en}`}
-            className="md:hidden fixed bottom-0 left-0 right-0 h-[65vh] flex flex-col z-40 rounded-t-2xl overflow-hidden border-t border-white/10 shadow-2xl"
-            style={{ backdropFilter: 'blur(20px)', background: 'rgba(15,31,58,0.97)' }}
+            data-glass=""
+            className="md:hidden fixed bottom-0 left-0 right-0 h-[65vh] flex flex-col z-40 rounded-t-2xl overflow-hidden border-t shadow-2xl"
+            style={{ backdropFilter: 'blur(20px)', background: 'var(--surface-mid)', borderColor: 'var(--border)', transition: 'background 0.25s ease' }}
             variants={panelVariants}
             initial="hiddenMobile"
             animate="visibleMobile"

@@ -42,17 +42,18 @@ export function MapSearch() {
       <div className="relative">
         {/* Input */}
         <div
+          data-glass=""
           className="flex items-center gap-2 px-3 py-2.5 rounded-xl"
           style={{
             backdropFilter: 'blur(20px)',
-            background: 'rgba(10,22,40,0.90)',
+            background: 'var(--surface)',
             border: open || query
               ? '1px solid rgba(29,155,138,0.45)'
-              : '1px solid rgba(255,255,255,0.12)',
+              : '1px solid var(--border)',
             boxShadow: open || query
-              ? '0 4px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(29,155,138,0.15)'
-              : '0 4px 16px rgba(0,0,0,0.35)',
-            transition: 'border-color 0.2s, box-shadow 0.2s',
+              ? '0 4px 24px var(--shadow), 0 0 0 1px rgba(29,155,138,0.15)'
+              : `0 4px 16px var(--shadow)`,
+            transition: 'border-color 0.2s, box-shadow 0.2s, background 0.25s',
           }}
         >
           <Search size={14} className="text-white/35 flex-shrink-0" />
@@ -94,12 +95,13 @@ export function MapSearch() {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -4, scale: 0.98 }}
               transition={{ duration: 0.15 }}
+              data-glass=""
               className="absolute top-full mt-1.5 left-0 right-0 rounded-xl overflow-hidden"
               style={{
                 backdropFilter: 'blur(20px)',
-                background: 'rgba(10,22,40,0.97)',
+                background: 'var(--surface-mid)',
                 border: '1px solid rgba(29,155,138,0.25)',
-                boxShadow: '0 8px 32px rgba(0,0,0,0.5)',
+                boxShadow: '0 8px 32px var(--shadow)',
               }}
               role="listbox"
               aria-label="Search results"
@@ -135,11 +137,12 @@ export function MapSearch() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -4 }}
               transition={{ duration: 0.15 }}
+              data-glass=""
               className="absolute top-full mt-1.5 left-0 right-0 rounded-xl px-4 py-3 text-center"
               style={{
                 backdropFilter: 'blur(20px)',
-                background: 'rgba(10,22,40,0.97)',
-                border: '1px solid rgba(255,255,255,0.10)',
+                background: 'var(--surface-mid)',
+                border: '1px solid var(--border)',
               }}
             >
               <p className="text-xs text-white/35">No projects found for "{query}"</p>

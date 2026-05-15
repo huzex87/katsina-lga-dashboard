@@ -29,12 +29,14 @@ export function WardProjectsList({ wardName, projects, onClose }: Props) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 12, scale: 0.97 }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+      data-glass=""
       className="absolute bottom-36 md:bottom-20 left-4 z-20 w-72 rounded-xl overflow-hidden shadow-2xl"
       style={{
         backdropFilter: 'blur(20px)',
-        background: 'rgba(10,22,40,0.96)',
+        background: 'var(--surface)',
         border: '1px solid rgba(29,155,138,0.30)',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(29,155,138,0.10)',
+        boxShadow: '0 8px 32px var(--shadow), 0 0 0 1px rgba(29,155,138,0.10)',
+        transition: 'background 0.25s ease',
       }}
     >
       {/* Header */}

@@ -22,14 +22,14 @@ export default async function DashboardPage() {
   const projects = await getProjects();
 
   return (
-    <main id="main-content" className="h-screen w-screen overflow-hidden bg-navy relative">
+    <main id="main-content" className="h-dvh w-screen overflow-hidden bg-navy relative">
       <TopBar />
 
       <div className="flex h-full pt-14 pb-14">
         <FilterSidebar />
 
         {/* Map canvas — fills remaining space */}
-        <div className="flex-1 md:ml-56 relative">
+        <div className="flex-1 md:ml-56 relative min-h-0 h-full">
           <DashboardMapWrapper projects={projects} />
         </div>
       </div>

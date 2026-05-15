@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { ArrowLeft, Save, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-import { ALL_CATEGORIES, CATEGORY_LABELS } from '@/types/project';
+import { ALL_CATEGORIES, CATEGORY_LABELS, WARD_NAMES, type Project } from '@/types/project';
+import { CertificateButton } from '@/components/panels/CertificateButton';
 
 export default function EditProjectPage() {
   const router = useRouter();
@@ -15,12 +16,14 @@ export default function EditProjectPage() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [defaults, setDefaults] = useState<Record<string, string>>({});
+  const [project, setProject] = useState<Project | null>(null);
 
   useEffect(() => {
     if (!id) return;
     fetch(`/api/projects/${id}`)
       .then((r) => r.json())
       .then((p) => {
+        setProject(p as Project);
         setDefaults({
           title_en: p.title_en ?? '',
           title_ha: p.title_ha ?? '',
@@ -29,8 +32,8 @@ export default function EditProjectPage() {
           community: p.community ?? '',
           latitude: String(p.latitude ?? ''),
           longitude: String(p.longitude ?? ''),
-          budget_ngn: p.budget_ngn != null ? String(p.budget_ngn / 100) : '',
-          expenditure_ngn: p.expenditure_ngn != null ? String(p.expenditure_ngn / 100) : '0',
+          budget_ngn: p.budget_ngn != null ? String(p.budget_ngn) : '',
+          expenditure_ngn: p.expenditure_ngn != null ? String(p.expenditure_ngn) : '0',
           beneficiaries: String(p.beneficiaries ?? ''),
           completion_date: p.completion_date ?? '',
           contractor: p.contractor ?? '',
@@ -59,8 +62,8 @@ export default function EditProjectPage() {
           latitude: parseFloat(data.latitude as string),
           longitude: parseFloat(data.longitude as string),
           beneficiaries: parseInt(data.beneficiaries as string),
-          budget_ngn: Math.round(parseFloat(data.budget_ngn as string) * 100),
-          expenditure_ngn: Math.round(parseFloat(data.expenditure_ngn as string) * 100),
+          budget_ngn: Math.round(parseFloat(data.budget_ngn as string)),
+          expenditure_ngn: Math.round(parseFloat(data.expenditure_ngn as string)),
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -127,8 +130,8 @@ export default function EditProjectPage() {
             <label htmlFor="ward_id" className={labelClass}>Ward *</label>
             <select id="ward_id" name="ward_id" required defaultValue={defaults.ward_id} className={`${inputClass} cursor-pointer`}>
               <option value="">Select ward…</option>
-              {Array.from({ length: 12 }, (_, i) => (
-                <option key={i + 1} value={i + 1} style={{ background: '#0F1F3A' }}>Ward {i + 1}</option>
+              {Object.entries(WARD_NAMES).map(([wid, wname]) => (
+                <option key={wid} value={wid} style={{ background: '#0F1F3A' }}>{wname}</option>
               ))}
             </select>
           </div>
@@ -211,6 +214,24 @@ export default function EditProjectPage() {
             Cancel
           </Link>
         </div>
+
+        {/* Certificate of Completion */}
+        {project && project.status === 'completed' && (
+          <div
+            className="mt-4 p-4 rounded-xl border border-white/10"
+            style={{ background: 'rgba(255,255,255,0.02)' }}
+          >
+            <p className="text-xs text-white/40 mb-3 uppercase tracking-wide font-medium">
+              Certificate of Completion
+            </p>
+            <p className="text-xs text-white/25 mb-3">
+              Generate and download the official PDF certificate for this project.
+            </p>
+            <div className="max-w-xs">
+              <CertificateButton project={project} />
+            </div>
+          </div>
+        )}
       </form>
     </div>
   );

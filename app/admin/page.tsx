@@ -1,7 +1,15 @@
 import Link from 'next/link';
 import { Plus, FileJson, BarChart3, CheckCircle2, Clock, AlertCircle } from 'lucide-react';
+import { createClient } from '@/lib/supabase/server';
 
-export default function AdminOverviewPage() {
+export default async function AdminOverviewPage() {
+  const supabase = await createClient();
+  const { data: rows } = await supabase.from('projects').select('status');
+
+  const completed = rows?.filter((r) => r.status === 'completed').length ?? 0;
+  const ongoing   = rows?.filter((r) => r.status === 'ongoing').length ?? 0;
+  const planning  = rows?.filter((r) => r.status === 'planning').length ?? 0;
+
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-8">
@@ -39,16 +47,20 @@ export default function AdminOverviewPage() {
         ))}
       </div>
 
-      {/* Info cards */}
+      {/* Stats cards */}
       <div className="grid grid-cols-3 gap-4">
         {[
-          { icon: CheckCircle2, label: 'Completed', value: '—', color: 'text-teal' },
-          { icon: Clock, label: 'Ongoing', value: '—', color: 'text-gold' },
-          { icon: AlertCircle, label: 'Planning', value: '—', color: 'text-white/40' },
+          { icon: CheckCircle2, label: 'Completed', value: completed, color: 'text-teal' },
+          { icon: Clock,         label: 'Ongoing',   value: ongoing,   color: 'text-gold' },
+          { icon: AlertCircle,   label: 'Planning',  value: planning,  color: 'text-white/40' },
         ].map(({ icon: Icon, label, value, color }) => (
-          <div key={label} className="p-4 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <div
+            key={label}
+            className="p-4 rounded-xl border border-white/10"
+            style={{ background: 'rgba(255,255,255,0.03)' }}
+          >
             <Icon size={16} className={`${color} mb-3`} />
-            <p className="text-xl font-bold text-white">{value}</p>
+            <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
             <p className="text-xs text-white/40 mt-1">{label}</p>
           </div>
         ))}

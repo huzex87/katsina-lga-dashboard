@@ -10,7 +10,8 @@ import { WardHeatmap } from './WardHeatmap';
 import { WardProjectsList } from './WardProjectsList';
 import { MapLegend } from './MapLegend';
 import { MapSearch } from './MapSearch';
-import { INITIAL_VIEWPORT, MAP_STYLE, MAPBOX_TOKEN } from '@/lib/mapbox/config';
+import { INITIAL_VIEWPORT, MAPBOX_TOKEN } from '@/lib/mapbox/config';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
   wardFillLayer, wardOutlineLayer, wardLabelLayer,
   wardBadgeBgLayer, wardBadgeTextLayer,
@@ -84,6 +85,10 @@ export function DashboardMap({ projects }: Props) {
   const [wardPopup, setWardPopup] = useState<WardPopupState | null>(null);
   const [selectedWard, setSelectedWard] = useState<SelectedWard | null>(null);
   const hoveredWardIdRef = useRef<number | null>(null);
+  const { theme } = useTheme();
+  const mapStyle = theme === 'light'
+    ? 'mapbox://styles/mapbox/light-v11'
+    : 'mapbox://styles/mapbox/dark-v11';
 
   useEffect(() => { setProjects(projects); }, [projects, setProjects]);
 
@@ -200,7 +205,7 @@ export function DashboardMap({ projects }: Props) {
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
         initialViewState={INITIAL_VIEWPORT}
-        mapStyle={MAP_STYLE}
+        mapStyle={mapStyle}
         style={{ width: '100%', height: '100%' }}
         onClick={handleMapClick}
         onLoad={onMapLoad}
@@ -246,29 +251,30 @@ export function DashboardMap({ projects }: Props) {
             offset={12}
           >
             <div
+              data-glass=""
               style={{
-                background: 'rgba(10,22,40,0.95)',
+                background: 'var(--surface)',
                 border: '1px solid rgba(29,155,138,0.35)',
                 borderRadius: 10,
                 padding: '10px 14px',
                 minWidth: 160,
                 backdropFilter: 'blur(12px)',
-                boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+                boxShadow: '0 4px 24px var(--shadow)',
               }}
             >
               <p style={{ color: '#25C4AE', fontWeight: 700, fontSize: 12, marginBottom: 6, letterSpacing: '0.05em' }}>
                 {wardPopup.wardName}
               </p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-                <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
+                <p style={{ color: 'var(--fg-2)', fontSize: 11 }}>
                   Projects:{' '}
-                  <span style={{ color: 'white', fontWeight: 600 }}>{wardPopup.count}</span>
+                  <span style={{ color: 'var(--fg-1)', fontWeight: 600 }}>{wardPopup.count}</span>
                   {wardPopup.count > 0 && (
-                    <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, marginLeft: 4 }}>— click to view</span>
+                    <span style={{ color: 'var(--fg-4)', fontSize: 10, marginLeft: 4 }}>— click to view</span>
                   )}
                 </p>
                 {wardPopup.investment > 0 && (
-                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
+                  <p style={{ color: 'var(--fg-2)', fontSize: 11 }}>
                     Investment:{' '}
                     <span style={{ color: '#F5A623', fontWeight: 600 }}>{formatNaira(wardPopup.investment)}</span>
                   </p>

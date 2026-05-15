@@ -1,17 +1,19 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { BarChart3, MapPin, Users, Landmark, TrendingUp } from 'lucide-react';
+import { BarChart3, MapPin, Users, Landmark, TrendingUp, Sun, Moon } from 'lucide-react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { formatNaira, computeStats, animateCounter } from '@/lib/utils';
 import { useReducedMotion } from 'framer-motion';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 export function TopBar() {
   const projects = useDashboardStore((s) => s.projects);
   const filters = useDashboardStore((s) => s.filters);
   const prefersReduced = useReducedMotion();
   const { lang, toggle } = useLanguage();
+  const { theme, toggle: toggleTheme } = useTheme();
 
   const visibleProjects = projects.filter(
     (p) =>
@@ -47,8 +49,9 @@ export function TopBar() {
 
   return (
     <header
-      className="fixed top-0 left-0 right-0 z-20 border-b border-white/10"
-      style={{ backdropFilter: 'blur(16px)', background: 'rgba(10,22,40,0.92)' }}
+      data-glass=""
+      className="fixed top-0 left-0 right-0 z-20 border-b"
+      style={{ backdropFilter: 'blur(16px)', background: 'var(--surface)', borderColor: 'var(--border)', transition: 'background 0.25s ease' }}
     >
       {/* Teal accent line */}
       <div
@@ -112,8 +115,20 @@ export function TopBar() {
           ))}
         </div>
 
-        {/* Language toggle */}
-        <div className="flex-shrink-0">
+        {/* Controls */}
+        <div className="flex items-center gap-1.5 flex-shrink-0">
+          {/* Theme toggle */}
+          <button
+            onClick={toggleTheme}
+            className="flex items-center justify-center rounded-lg border transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer"
+            style={{ background: 'var(--surface-hover)', borderColor: 'var(--border)', color: 'var(--fg-2)' }}
+            aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+            aria-pressed={theme === 'light'}
+          >
+            {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
+
+          {/* Language toggle */}
           <button
             onClick={toggle}
             className="text-xs px-3 py-2.5 rounded-lg border transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer font-semibold tabular-nums"
@@ -122,9 +137,9 @@ export function TopBar() {
               border: '1px solid rgba(29,155,138,0.35)',
               color: '#25C4AE',
             } : {
-              background: 'transparent',
-              border: '1px solid rgba(255,255,255,0.10)',
-              color: 'rgba(255,255,255,0.50)',
+              background: 'var(--surface-hover)',
+              border: `1px solid var(--border)`,
+              color: 'var(--fg-2)',
             }}
             aria-label={lang === 'en' ? 'Switch to Hausa language' : 'Switch to English language'}
             aria-pressed={lang === 'ha'}

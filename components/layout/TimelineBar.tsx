@@ -45,12 +45,14 @@ export function TimelineBar() {
 
   return (
     <nav
+      data-glass=""
       className="fixed bottom-0 left-0 right-0 md:left-56 z-10"
       style={{
         backdropFilter: 'blur(20px) saturate(180%)',
-        background: 'rgba(8,18,34,0.92)',
-        borderTop: '1px solid rgba(255,255,255,0.06)',
-        boxShadow: '0 -4px 32px rgba(0,0,0,0.4)',
+        background: 'var(--surface-deep)',
+        borderTop: '1px solid var(--border)',
+        boxShadow: '0 -4px 32px var(--shadow)',
+        transition: 'background 0.25s ease',
       }}
       aria-label="Year timeline filter"
     >

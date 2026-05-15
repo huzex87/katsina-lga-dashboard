@@ -9,13 +9,15 @@ export function MapLegend() {
 
   return (
     <div
+      data-glass=""
       className="absolute bottom-4 right-4 z-20 rounded-xl overflow-hidden"
       style={{
         backdropFilter: 'blur(16px)',
-        background: 'rgba(10,22,40,0.92)',
-        border: '1px solid rgba(255,255,255,0.10)',
-        boxShadow: '0 4px 24px rgba(0,0,0,0.45)',
+        background: 'var(--surface)',
+        border: '1px solid var(--border)',
+        boxShadow: '0 4px 24px var(--shadow)',
         minWidth: 156,
+        transition: 'background 0.25s ease',
       }}
     >
       {/* Header / toggle */}

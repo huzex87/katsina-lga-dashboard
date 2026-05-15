@@ -5,10 +5,12 @@ export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+
   let query = supabase
     .from('projects')
-    .select('*, ward:wards(id, name, name_ha)')
-    .eq('published', true);
+    .select('*, ward:wards(id, name, name_ha)');
+  if (!user) query = query.eq('published', true);
 
   const category = searchParams.get('category');
   if (category && category !== 'all') {

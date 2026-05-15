@@ -53,6 +53,12 @@ export interface ProjectStats {
 
 export const ALL_CATEGORIES: ProjectCategory[] = ['roads', 'water', 'health', 'education', 'agric', 'youth', 'security'];
 
+export const WARD_NAMES: Record<number, string> = {
+  1: 'Arewa A', 2: 'Arewa B', 3: 'Gabas I', 4: 'Gabas II', 5: 'Gabas III',
+  6: 'Kudu I', 7: 'Kudu II', 8: 'Kudu III', 9: 'Yamma I', 10: 'Yamma II',
+  11: 'Shinkafi A', 12: 'Shinkafi B',
+};
+
 export const CATEGORY_LABELS: Record<ProjectCategory, string> = {
   roads: 'Roads & Infrastructure',
   water: 'Water & Sanitation',
