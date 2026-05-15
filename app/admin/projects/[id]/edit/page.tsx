@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, MapPin, Check } from 'lucide-react';
 import Link from 'next/link';
 import { ALL_CATEGORIES, CATEGORY_LABELS, WARD_NAMES, type Project } from '@/types/project';
 import { CertificateButton } from '@/components/panels/CertificateButton';
@@ -39,6 +39,8 @@ export default function EditProjectPage() {
           contractor: p.contractor ?? '',
           description_en: p.description_en ?? '',
           description_ha: p.description_ha ?? '',
+          status: p.status ?? 'completed',
+          published: String(p.published ?? true),
         });
         setLoading(false);
       })
@@ -64,6 +66,7 @@ export default function EditProjectPage() {
           beneficiaries: parseInt(data.beneficiaries as string),
           budget_ngn: Math.round(parseFloat(data.budget_ngn as string)),
           expenditure_ngn: Math.round(parseFloat(data.expenditure_ngn as string)),
+          published: data.published === 'true',
         }),
       });
       if (!res.ok) throw new Error(await res.text());
@@ -146,11 +149,14 @@ export default function EditProjectPage() {
           <legend className="text-sm font-semibold text-white px-1 col-span-2">GPS Coordinates</legend>
           <div>
             <label htmlFor="latitude" className={labelClass}>Latitude *</label>
-            <input id="latitude" name="latitude" type="number" step="0.0001" required defaultValue={defaults.latitude} placeholder="12.9954" className={inputClass} />
+            <input id="latitude" name="latitude" type="number" step="any" required defaultValue={defaults.latitude} placeholder="12.9954" className={inputClass} />
           </div>
           <div>
             <label htmlFor="longitude" className={labelClass}>Longitude *</label>
-            <input id="longitude" name="longitude" type="number" step="0.0001" required defaultValue={defaults.longitude} placeholder="7.6014" className={inputClass} />
+            <input id="longitude" name="longitude" type="number" step="any" required defaultValue={defaults.longitude} placeholder="7.6014" className={inputClass} />
+          </div>
+          <div className="col-span-2">
+            <GpsButton latId="latitude" lngId="longitude" />
           </div>
         </fieldset>
 
@@ -197,6 +203,26 @@ export default function EditProjectPage() {
           </div>
         </fieldset>
 
+        {/* Status & Published */}
+        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 col-span-2">Status & Visibility</legend>
+          <div>
+            <label htmlFor="status" className={labelClass}>Status *</label>
+            <select id="status" name="status" required defaultValue={defaults.status} className={`${inputClass} cursor-pointer`}>
+              <option value="completed" style={{ background: '#0F1F3A' }}>Completed</option>
+              <option value="ongoing" style={{ background: '#0F1F3A' }}>Ongoing</option>
+              <option value="planning" style={{ background: '#0F1F3A' }}>Planning</option>
+            </select>
+          </div>
+          <div className="flex flex-col justify-end">
+            <label className={labelClass}>Published</label>
+            <label className="flex items-center gap-3 cursor-pointer min-h-[44px]">
+              <input type="checkbox" name="published" value="true" defaultChecked={defaults.published === 'true'} className="w-4 h-4 rounded accent-teal" />
+              <span className="text-sm text-white/70">Visible on public dashboard</span>
+            </label>
+          </div>
+        </fieldset>
+
         {/* Submit */}
         <div className="flex gap-3 pt-2">
           <button
@@ -216,7 +242,7 @@ export default function EditProjectPage() {
         </div>
 
         {/* Certificate of Completion */}
-        {project && project.status === 'completed' && (
+        {project?.status === 'completed' && (
           <div
             className="mt-4 p-4 rounded-xl border border-white/10"
             style={{ background: 'rgba(255,255,255,0.02)' }}
@@ -234,5 +260,47 @@ export default function EditProjectPage() {
         )}
       </form>
     </div>
+  );
+}
+
+function GpsButton({ latId, lngId }: { latId: string; lngId: string }) {
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+
+  const getLocation = () => {
+    if (!navigator.geolocation) { setStatus('error'); setTimeout(() => setStatus('idle'), 3000); return; }
+    setStatus('loading');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = document.getElementById(latId) as HTMLInputElement | null;
+        const lng = document.getElementById(lngId) as HTMLInputElement | null;
+        if (lat) lat.value = pos.coords.latitude.toFixed(6);
+        if (lng) lng.value = pos.coords.longitude.toFixed(6);
+        setStatus('done');
+        setTimeout(() => setStatus('idle'), 3000);
+      },
+      () => { setStatus('error'); setTimeout(() => setStatus('idle'), 3000); },
+      { enableHighAccuracy: true, timeout: 12000 }
+    );
+  };
+
+  return (
+    <button
+      type="button"
+      onClick={getLocation}
+      disabled={status === 'loading'}
+      className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors min-h-[44px] border focus:outline-none focus-visible:ring-2 focus-visible:ring-teal ${
+        status === 'done' ? 'border-teal/40 bg-teal/10 text-teal' :
+        status === 'error' ? 'border-red-500/30 bg-red-500/10 text-red-400' :
+        'border-white/10 bg-white/5 text-white/60 hover:text-white hover:bg-white/8 hover:border-white/20'
+      }`}
+    >
+      {status === 'loading' ? <Loader2 size={14} className="animate-spin" /> :
+       status === 'done' ? <Check size={14} /> :
+       <MapPin size={14} />}
+      {status === 'loading' ? 'Getting location…' :
+       status === 'done' ? 'Location captured!' :
+       status === 'error' ? 'Location unavailable' :
+       'Use My Location'}
+    </button>
   );
 }

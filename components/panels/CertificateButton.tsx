@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Award, Loader2, Check } from 'lucide-react';
+import { Award, Loader2, Check, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { Project } from '@/types/project';
 
@@ -16,18 +16,16 @@ export function CertificateButton({ project }: Props) {
     if (state === 'loading') return;
     setState('loading');
     try {
-      const res = await fetch('/api/certificate', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ projectId: project.id }),
-      });
-      if (!res.ok) throw new Error('Failed');
-      const blob = await res.blob();
+      const { generateCertificate } = await import('@/lib/certificate/generator');
+      const pdfBytes = await generateCertificate(project);
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `KTLGA_${project.ref_code}_${new Date().getFullYear()}.pdf`;
+      document.body.appendChild(a);
       a.click();
+      document.body.removeChild(a);
       URL.revokeObjectURL(url);
       setState('done');
       setTimeout(() => setState('idle'), 3000);
@@ -65,6 +63,8 @@ export function CertificateButton({ project }: Props) {
         <Loader2 size={14} className="animate-spin" />
       ) : state === 'done' ? (
         <Check size={14} />
+      ) : state === 'error' ? (
+        <AlertCircle size={14} />
       ) : (
         <Award size={14} />
       )}

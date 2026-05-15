@@ -58,17 +58,20 @@ export async function generateCertificate(project: Project): Promise<Uint8Array>
   page.drawRectangle({ x: 40, y: height - 178, width: width - 80, height: 1, color: GOLD });
 
   // Fields
+  const ward = Array.isArray(project.ward) ? (project.ward as unknown[])[0] : project.ward;
+  const wardName = (ward as { name?: string } | null)?.name ?? 'N/A';
+
   const fields: [string, string][] = [
     ['Project Title:', project.title_en],
     ['Hausa Title:', project.title_ha ?? 'N/A'],
     ['Category:', project.category.toUpperCase()],
-    ['Ward:', project.ward.name],
+    ['Ward:', wardName],
     ['Community:', project.community],
     ['GPS Coordinates:', formatCoords(project.latitude, project.longitude)],
-    ['Beneficiaries:', `${project.beneficiaries.toLocaleString()} people`],
+    ['Beneficiaries:', `${(project.beneficiaries ?? 0).toLocaleString()} people`],
     ['Budget Allocated:', formatNairaFull(project.budget_ngn)],
     ['Expenditure:', formatNairaFull(project.expenditure_ngn)],
-    ['Commissioning Date:', formatDate(project.completion_date)],
+    ['Commissioning Date:', formatDate(project.completion_date ?? '')],
     ['Contractor:', project.contractor ?? 'N/A'],
     ['Certificate No.:', project.ref_code],
   ];

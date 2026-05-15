@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { X, MapPin, Users, Calendar, Banknote, TrendingUp, Copy, ExternalLink, Share2 } from 'lucide-react';
+import { X, MapPin, Users, Calendar, Banknote, TrendingUp, Copy, ExternalLink, Share2, Check } from 'lucide-react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ImageCarousel } from './ImageCarousel';
 import { CertificateButton } from './CertificateButton';
@@ -48,14 +48,33 @@ export function ProjectDetailPanel() {
     };
   }, [open, selectProject]);
 
-  const copyCoords = useCallback(() => {
+  const [coordsCopied, setCoordsCopied] = useState(false);
+  const [shareState, setShareState] = useState<'idle' | 'copied' | 'error'>('idle');
+
+  useEffect(() => {
+    setCoordsCopied(false);
+    setShareState('idle');
+  }, [selectedProject?.id]);
+
+  const copyCoords = useCallback(async () => {
     if (!selectedProject) return;
-    navigator.clipboard.writeText(formatCoords(selectedProject.latitude, selectedProject.longitude));
+    try {
+      await navigator.clipboard.writeText(formatCoords(selectedProject.latitude, selectedProject.longitude));
+      setCoordsCopied(true);
+      setTimeout(() => setCoordsCopied(false), 2000);
+    } catch { /* clipboard unavailable */ }
   }, [selectedProject]);
 
-  const copyShareUrl = useCallback(() => {
+  const copyShareUrl = useCallback(async () => {
     if (!selectedProject) return;
-    navigator.clipboard.writeText(`${window.location.origin}/projects/${selectedProject.ref_code}`);
+    try {
+      await navigator.clipboard.writeText(`${window.location.origin}/projects/${selectedProject.ref_code}`);
+      setShareState('copied');
+    } catch {
+      setShareState('error');
+    } finally {
+      setTimeout(() => setShareState('idle'), 2000);
+    }
   }, [selectedProject]);
 
   const budgetPercent = selectedProject
@@ -106,6 +125,8 @@ export function ProjectDetailPanel() {
               onCopyCoords={copyCoords}
               onShare={copyShareUrl}
               budgetPercent={budgetPercent}
+              coordsCopied={coordsCopied}
+              shareState={shareState}
             />
           </motion.div>
 
@@ -133,6 +154,8 @@ export function ProjectDetailPanel() {
               onCopyCoords={copyCoords}
               onShare={copyShareUrl}
               budgetPercent={budgetPercent}
+              coordsCopied={coordsCopied}
+              shareState={shareState}
             />
           </motion.div>
         </>
@@ -142,7 +165,7 @@ export function ProjectDetailPanel() {
 }
 
 function PanelContent({
-  project, closeButtonRef, onClose, onCopyCoords, onShare, budgetPercent
+  project, closeButtonRef, onClose, onCopyCoords, onShare, budgetPercent, coordsCopied, shareState
 }: {
   project: Project;
   closeButtonRef: React.RefObject<HTMLButtonElement | null>;
@@ -150,6 +173,8 @@ function PanelContent({
   onCopyCoords: () => void;
   onShare: () => void;
   budgetPercent: number;
+  coordsCopied: boolean;
+  shareState: 'idle' | 'copied' | 'error';
 }) {
   const catColor = CATEGORY_COLORS[project.category];
   const catLabel = CATEGORY_LABELS[project.category];
@@ -270,10 +295,10 @@ function PanelContent({
               <div className="flex gap-1.5">
                 <button
                   onClick={onCopyCoords}
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
-                  aria-label="Copy GPS coordinates"
+                  className={`min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal ${coordsCopied ? 'bg-teal/20 text-teal' : 'bg-white/5 hover:bg-white/10 text-white/50 hover:text-white'}`}
+                  aria-label={coordsCopied ? 'Coordinates copied!' : 'Copy GPS coordinates'}
                 >
-                  <Copy size={13} />
+                  {coordsCopied ? <Check size={13} /> : <Copy size={13} />}
                 </button>
                 <a
                   href={`https://maps.google.com/?q=${project.latitude},${project.longitude}`}
@@ -298,14 +323,20 @@ function PanelContent({
 
       {/* Footer */}
       <div className="px-4 py-3 border-t border-white/10 flex-shrink-0 space-y-2">
-        <CertificateButton project={project} />
+        {project.status === 'completed' && <CertificateButton project={project} />}
         <button
           onClick={onShare}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 transition-all min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
-          aria-label="Copy share link for this project"
+          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium border transition-all min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal ${
+            shareState === 'copied'
+              ? 'bg-teal/15 border-teal/40 text-teal'
+              : shareState === 'error'
+              ? 'bg-red-500/10 border-red-500/30 text-red-400'
+              : 'text-white/60 hover:text-white border-white/10 hover:border-white/25 hover:bg-white/5'
+          }`}
+          aria-label={shareState === 'copied' ? 'Link copied!' : 'Copy share link for this project'}
         >
-          <Share2 size={14} />
-          Share Project
+          {shareState === 'copied' ? <Check size={14} /> : <Share2 size={14} />}
+          {shareState === 'copied' ? 'Link Copied!' : shareState === 'error' ? 'Copy unavailable' : 'Share Project'}
         </button>
       </div>
     </div>
