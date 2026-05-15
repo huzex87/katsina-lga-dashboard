@@ -41,6 +41,12 @@ function generateRefCode(category: string): string {
 }
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { csv } = await request.json();
 
   if (!csv || typeof csv !== 'string') {
@@ -51,8 +57,6 @@ export async function POST(request: NextRequest) {
   if (rows.length === 0) {
     return NextResponse.json({ error: 'No valid rows found in CSV' }, { status: 400 });
   }
-
-  const supabase = await createClient();
   const projects = rows
     .filter((r) => r.title_en && r.category && r.community)
     .map((r) => ({
@@ -65,8 +69,8 @@ export async function POST(request: NextRequest) {
       latitude: parseFloat(r.latitude ?? '12.9954'),
       longitude: parseFloat(r.longitude ?? '7.6014'),
       beneficiaries: parseInt(r.beneficiaries ?? '0'),
-      budget_ngn: Math.round(parseFloat(r.budget_ngn ?? '0') * 100),
-      expenditure_ngn: Math.round(parseFloat(r.expenditure_ngn ?? '0') * 100),
+      budget_ngn: Math.round(parseFloat(r.budget_ngn ?? '0')),
+      expenditure_ngn: Math.round(parseFloat(r.expenditure_ngn ?? '0')),
       completion_date: r.completion_date || null,
       contractor: r.contractor || null,
       description_en: r.description_en || null,

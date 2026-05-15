@@ -3,13 +3,17 @@ import { createClient } from '@/lib/supabase/server';
 import { generateCertificate } from '@/lib/certificate/generator';
 
 export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   const { projectId } = await request.json();
 
   if (!projectId) {
     return NextResponse.json({ error: 'projectId required' }, { status: 400 });
   }
-
-  const supabase = await createClient();
   const { data: project, error } = await supabase
     .from('projects')
     .select('*, ward:wards(*)')
