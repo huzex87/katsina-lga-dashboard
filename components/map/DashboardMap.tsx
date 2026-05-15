@@ -3,20 +3,38 @@
 import { useEffect, useRef, useMemo, useCallback, useState } from 'react';
 import Map, { Source, Layer, NavigationControl, Popup, type MapRef, type MapMouseEvent } from 'react-map-gl/mapbox';
 import 'mapbox-gl/dist/mapbox-gl.css';
+import { AnimatePresence } from 'framer-motion';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ProjectPin } from './ProjectPin';
 import { WardHeatmap } from './WardHeatmap';
+import { WardProjectsList } from './WardProjectsList';
 import { INITIAL_VIEWPORT, MAP_STYLE, MAPBOX_TOKEN } from '@/lib/mapbox/config';
 import {
   wardFillLayer, wardOutlineLayer, wardLabelLayer,
+  wardBadgeBgLayer, wardBadgeTextLayer,
   lgaBoundaryFillLayer, lgaBoundaryLineLayer, lgaBoundaryGlowLayer,
 } from '@/lib/mapbox/layers';
 import { formatNaira } from '@/lib/utils';
 import type { Project } from '@/types/project';
+import type { GeoJSON } from 'geojson';
 
-interface Props {
-  projects: Project[];
-}
+// Precomputed bbox-center centroids for each of the 12 official wards
+const WARD_CENTROIDS: Record<number, [number, number]> = {
+  1:  [7.595808, 12.995179], // Arewa A
+  2:  [7.577317, 13.019988], // Arewa B
+  3:  [7.622748, 13.002097], // Gabas I
+  4:  [7.622131, 12.985931], // Gabas II
+  5:  [7.609004, 13.026834], // Gabas III
+  6:  [7.594475, 12.983802], // Kudu I
+  7:  [7.620425, 12.974603], // Kudu II
+  8:  [7.601964, 12.967942], // Kudu III
+  9:  [7.574846, 13.003435], // Yamma I
+  10: [7.573727, 12.976507], // Yamma II
+  11: [7.654104, 13.048843], // Shinkafi A
+  12: [7.660907, 13.002876], // Shinkafi B
+};
+
+interface Props { projects: Project[] }
 
 interface WardPopupState {
   longitude: number;
@@ -26,15 +44,46 @@ interface WardPopupState {
   investment: number;
 }
 
+interface SelectedWard {
+  id: number;
+  name: string;
+  projects: Project[];
+}
+
+function buildBadgeGeoJSON(
+  visibleProjects: Project[]
+): GeoJSON.FeatureCollection {
+  const counts: Record<number, { count: number; investment: number }> = {};
+  for (const p of visibleProjects) {
+    const wid = p.ward.id;
+    if (!counts[wid]) counts[wid] = { count: 0, investment: 0 };
+    counts[wid].count += 1;
+    counts[wid].investment += p.budget_ngn;
+  }
+
+  return {
+    type: 'FeatureCollection',
+    features: Object.entries(WARD_CENTROIDS).map(([wardId, [lng, lat]]) => {
+      const id = parseInt(wardId);
+      const { count = 0, investment = 0 } = counts[id] ?? {};
+      return {
+        type: 'Feature',
+        properties: { wardId: id, count, investment },
+        geometry: { type: 'Point', coordinates: [lng, lat] },
+      };
+    }),
+  };
+}
+
 export function DashboardMap({ projects }: Props) {
   const mapRef = useRef<MapRef>(null);
   const { filters, selectProject, setProjects, projects: storeProjects } = useDashboardStore();
+  const [mapLoaded, setMapLoaded] = useState(false);
   const [wardPopup, setWardPopup] = useState<WardPopupState | null>(null);
+  const [selectedWard, setSelectedWard] = useState<SelectedWard | null>(null);
   const hoveredWardIdRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    setProjects(projects);
-  }, [projects, setProjects]);
+  useEffect(() => { setProjects(projects); }, [projects, setProjects]);
 
   const visibleProjects = useMemo(() =>
     storeProjects.filter(
@@ -45,40 +94,46 @@ export function DashboardMap({ projects }: Props) {
     [storeProjects, filters.categories, filters.year]
   );
 
-  /* Set feature states (project count per ward) whenever projects change */
+  const onMapLoad = useCallback(() => setMapLoaded(true), []);
+
+  /* ── Feature states: ward fill density based on visible project counts ── */
   useEffect(() => {
+    if (!mapLoaded) return;
     const map = mapRef.current?.getMap();
     if (!map) return;
-    const apply = () => {
-      const counts: Record<number, { count: number; investment: number }> = {};
-      for (const p of storeProjects) {
-        const wid = p.ward.id;
-        if (!counts[wid]) counts[wid] = { count: 0, investment: 0 };
-        counts[wid].count += 1;
-        counts[wid].investment += p.budget_ngn;
-      }
-      // Clear all first
-      for (let id = 1; id <= 30; id++) {
-        try { map.removeFeatureState({ source: 'wards', id }); } catch { /* noop */ }
-      }
-      Object.entries(counts).forEach(([wardId, { count, investment }]) => {
-        map.setFeatureState(
-          { source: 'wards', id: parseInt(wardId) },
-          { count, investment, hasProjects: count > 0 }
-        );
-      });
-    };
-    if (map.isStyleLoaded()) {
-      apply();
-    } else {
-      map.once('load', apply);
-    }
-  }, [storeProjects]);
 
+    // Build counts from VISIBLE (filtered) projects
+    const counts: Record<number, { count: number; investment: number }> = {};
+    for (const p of visibleProjects) {
+      const wid = p.ward.id;
+      if (!counts[wid]) counts[wid] = { count: 0, investment: 0 };
+      counts[wid].count += 1;
+      counts[wid].investment += p.budget_ngn;
+    }
+
+    // Reset all 12 wards, then apply actual counts
+    for (let id = 1; id <= 12; id++) {
+      map.setFeatureState({ source: 'wards', id }, { count: 0, hasProjects: false, investment: 0 });
+    }
+    Object.entries(counts).forEach(([wardId, { count, investment }]) => {
+      map.setFeatureState(
+        { source: 'wards', id: parseInt(wardId) },
+        { count, investment, hasProjects: count > 0 }
+      );
+    });
+
+    // Update badge source with same counts
+    const badgeSource = map.getSource('ward-badges') as mapboxgl.GeoJSONSource | undefined;
+    badgeSource?.setData(buildBadgeGeoJSON(visibleProjects));
+  }, [mapLoaded, visibleProjects]);
+
+  /* ── Ward hover popup ─────────────────────────────────────────────────── */
   const handleWardMouseMove = useCallback((e: MapMouseEvent) => {
     const map = mapRef.current?.getMap();
     if (!map || !e.features?.length) return;
     const feature = e.features[0];
+    if (feature.layer?.id !== 'ward-fill') return;
+
     const wardId = feature.id as number;
     const wardName = feature.properties?.name as string;
 
@@ -110,95 +165,142 @@ export function DashboardMap({ projects }: Props) {
     setWardPopup(null);
   }, []);
 
-  const handleMapClick = useCallback(() => {
-    selectProject(null);
-  }, [selectProject]);
+  /* ── Map click: ward → show project list | empty → clear ─────────────── */
+  const handleMapClick = useCallback((e: MapMouseEvent) => {
+    const wardFeature = e.features?.find(f => f.layer?.id === 'ward-fill');
+    if (wardFeature) {
+      const wardId = wardFeature.id as number;
+      const wardName = wardFeature.properties?.name as string ?? `Ward ${wardId}`;
+      const wardProjects = visibleProjects.filter((p) => p.ward.id === wardId);
+      setSelectedWard({ id: wardId, name: wardName, projects: wardProjects });
+      selectProject(null);
+    } else {
+      selectProject(null);
+      setSelectedWard(null);
+    }
+  }, [selectProject, visibleProjects]);
+
+  // Update selectedWard projects list when filters change
+  useEffect(() => {
+    if (!selectedWard) return;
+    setSelectedWard(sw => sw ? {
+      ...sw,
+      projects: visibleProjects.filter(p => p.ward.id === sw.id),
+    } : null);
+  }, [visibleProjects]);
 
   return (
-    <Map
-      ref={mapRef}
-      mapboxAccessToken={MAPBOX_TOKEN}
-      initialViewState={INITIAL_VIEWPORT}
-      mapStyle={MAP_STYLE}
-      style={{ width: '100%', height: '100%' }}
-      onClick={handleMapClick}
-      interactiveLayerIds={['ward-fill']}
-      onMouseMove={handleWardMouseMove}
-      onMouseLeave={handleWardMouseLeave}
-      cursor={wardPopup ? 'crosshair' : 'grab'}
-    >
-      <NavigationControl position="bottom-left" />
+    <div className="relative w-full h-full">
+      <Map
+        ref={mapRef}
+        mapboxAccessToken={MAPBOX_TOKEN}
+        initialViewState={INITIAL_VIEWPORT}
+        mapStyle={MAP_STYLE}
+        style={{ width: '100%', height: '100%' }}
+        onClick={handleMapClick}
+        onLoad={onMapLoad}
+        interactiveLayerIds={['ward-fill']}
+        onMouseMove={handleWardMouseMove}
+        onMouseLeave={handleWardMouseLeave}
+        cursor={wardPopup ? 'crosshair' : 'grab'}
+      >
+        <NavigationControl position="bottom-left" />
 
-      {/* LGA outer boundary */}
-      <Source id="lga-boundary" type="geojson" data="/geojson/katsina-lga.geojson">
-        <Layer {...lgaBoundaryGlowLayer} />
-        <Layer {...lgaBoundaryFillLayer} />
-        <Layer {...lgaBoundaryLineLayer} />
-      </Source>
+        {/* LGA outer boundary */}
+        <Source id="lga-boundary" type="geojson" data="/geojson/katsina-lga.geojson">
+          <Layer {...lgaBoundaryGlowLayer} />
+          <Layer {...lgaBoundaryFillLayer} />
+          <Layer {...lgaBoundaryLineLayer} />
+        </Source>
 
-      {/* Ward boundaries (promoteId maps properties.id → feature ID for setFeatureState) */}
-      <Source id="wards" type="geojson" data="/geojson/katsina-wards.geojson" promoteId="id">
-        <Layer {...wardFillLayer} />
-        <Layer {...wardOutlineLayer} />
-        <Layer {...wardLabelLayer} />
-      </Source>
+        {/* Ward boundaries */}
+        <Source id="wards" type="geojson" data="/geojson/katsina-wards.geojson" promoteId="id">
+          <Layer {...wardFillLayer} />
+          <Layer {...wardOutlineLayer} />
+          <Layer {...wardLabelLayer} />
+        </Source>
 
-      {/* Ward hover popup */}
-      {wardPopup && (
-        <Popup
-          longitude={wardPopup.longitude}
-          latitude={wardPopup.latitude}
-          closeButton={false}
-          closeOnClick={false}
-          anchor="bottom"
-          offset={12}
-          className="ward-popup"
+        {/* Ward project count badges */}
+        <Source
+          id="ward-badges"
+          type="geojson"
+          data={buildBadgeGeoJSON(visibleProjects)}
         >
-          <div
-            style={{
-              background: 'rgba(10,22,40,0.95)',
-              border: '1px solid rgba(29,155,138,0.35)',
-              borderRadius: 10,
-              padding: '10px 14px',
-              minWidth: 160,
-              backdropFilter: 'blur(12px)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
-            }}
+          <Layer {...wardBadgeBgLayer} />
+          <Layer {...wardBadgeTextLayer} />
+        </Source>
+
+        {/* Ward hover popup */}
+        {wardPopup && (
+          <Popup
+            longitude={wardPopup.longitude}
+            latitude={wardPopup.latitude}
+            closeButton={false}
+            closeOnClick={false}
+            anchor="bottom"
+            offset={12}
           >
-            <p style={{ color: '#25C4AE', fontWeight: 700, fontSize: 12, marginBottom: 6, letterSpacing: '0.05em' }}>
-              {wardPopup.wardName}
-            </p>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
-                Projects:{' '}
-                <span style={{ color: 'white', fontWeight: 600 }}>{wardPopup.count}</span>
+            <div
+              style={{
+                background: 'rgba(10,22,40,0.95)',
+                border: '1px solid rgba(29,155,138,0.35)',
+                borderRadius: 10,
+                padding: '10px 14px',
+                minWidth: 160,
+                backdropFilter: 'blur(12px)',
+                boxShadow: '0 4px 24px rgba(0,0,0,0.5)',
+              }}
+            >
+              <p style={{ color: '#25C4AE', fontWeight: 700, fontSize: 12, marginBottom: 6, letterSpacing: '0.05em' }}>
+                {wardPopup.wardName}
               </p>
-              {wardPopup.investment > 0 && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
-                  Investment:{' '}
-                  <span style={{ color: '#F5A623', fontWeight: 600 }}>{formatNaira(wardPopup.investment)}</span>
+                  Projects:{' '}
+                  <span style={{ color: 'white', fontWeight: 600 }}>{wardPopup.count}</span>
+                  {wardPopup.count > 0 && (
+                    <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 10, marginLeft: 4 }}>— click to view</span>
+                  )}
                 </p>
-              )}
+                {wardPopup.investment > 0 && (
+                  <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 11 }}>
+                    Investment:{' '}
+                    <span style={{ color: '#F5A623', fontWeight: 600 }}>{formatNaira(wardPopup.investment)}</span>
+                  </p>
+                )}
+              </div>
             </div>
-          </div>
-        </Popup>
-      )}
+          </Popup>
+        )}
 
-      {/* Project pins */}
-      {filters.view === 'pins' &&
-        visibleProjects.map((project, i) => (
-          <ProjectPin
-            key={project.id}
-            project={project}
-            entranceDelay={i * 60}
-            onClick={(e) => {
-              e.originalEvent?.stopPropagation();
-              selectProject(project.id);
-            }}
+        {/* Project pins */}
+        {filters.view === 'pins' &&
+          visibleProjects.map((project, i) => (
+            <ProjectPin
+              key={project.id}
+              project={project}
+              entranceDelay={i * 60}
+              onClick={(e) => {
+                e.originalEvent?.stopPropagation();
+                setSelectedWard(null);
+                selectProject(project.id);
+              }}
+            />
+          ))}
+
+        {filters.view === 'heatmap' && <WardHeatmap projects={visibleProjects} />}
+      </Map>
+
+      {/* Ward project list panel (outside Map, in the relative container) */}
+      <AnimatePresence>
+        {selectedWard && (
+          <WardProjectsList
+            wardName={selectedWard.name}
+            projects={selectedWard.projects}
+            onClose={() => setSelectedWard(null)}
           />
-        ))}
-
-      {filters.view === 'heatmap' && <WardHeatmap projects={visibleProjects} />}
-    </Map>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

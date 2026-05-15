@@ -127,6 +127,15 @@
   }
 }
 
+/* ─── Mapbox popup reset (strip default white box) ─────────────────────── */
+.mapboxgl-popup-content {
+  background: transparent !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+.mapboxgl-popup-tip { display: none !important; }
+
 /* ─── Mapbox GL overrides ───────────────────────────────────────────────── */
 .mapboxgl-ctrl-group {
   background: rgba(15,31,58,0.9) !important;

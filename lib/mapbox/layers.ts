@@ -109,6 +109,39 @@ export const lgaBoundaryGlowLayer: LayerProps = {
   },
 };
 
+/* ─── Ward count badge — circle background ──────────────────────────────── */
+export const wardBadgeBgLayer: LayerProps = {
+  id: 'ward-badge-bg',
+  type: 'circle',
+  filter: ['>', ['get', 'count'], 0],
+  paint: {
+    'circle-radius': ['interpolate', ['linear'], ['get', 'count'], 1, 11, 5, 15, 10, 18],
+    'circle-color': '#1D9B8A',
+    'circle-stroke-color': 'rgba(255,255,255,0.85)',
+    'circle-stroke-width': 1.5,
+    'circle-opacity': 0.92,
+    'circle-blur': 0,
+  },
+};
+
+/* ─── Ward count badge — number label ───────────────────────────────────── */
+export const wardBadgeTextLayer: LayerProps = {
+  id: 'ward-badge-text',
+  type: 'symbol',
+  filter: ['>', ['get', 'count'], 0],
+  layout: {
+    'text-field': ['to-string', ['get', 'count']],
+    'text-font': ['DIN Offc Pro Bold', 'Arial Unicode MS Bold'],
+    'text-size': 11,
+    'text-anchor': 'center',
+    'text-allow-overlap': true,
+    'text-ignore-placement': true,
+  },
+  paint: {
+    'text-color': '#ffffff',
+  },
+};
+
 /* ─── Heatmap (ward-level project density) ──────────────────────────────── */
 export const heatmapLayer: LayerProps = {
   id: 'ward-heatmap',
