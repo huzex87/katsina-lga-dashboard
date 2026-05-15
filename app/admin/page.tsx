@@ -12,7 +12,7 @@ export default async function AdminOverviewPage() {
 
   return (
     <div className="max-w-4xl">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between gap-3 mb-6 sm:mb-8 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold text-white">Dashboard Overview</h1>
           <p className="text-sm text-white/40 mt-1">Manage Katsina LGA project records</p>
@@ -27,7 +27,7 @@ export default async function AdminOverviewPage() {
       </div>
 
       {/* Quick actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6 sm:mb-8">
         {[
           { href: '/admin/projects/new', icon: Plus, label: 'Add Project', desc: 'Create a new project record', color: 'text-teal' },
           { href: '/admin/import', icon: FileJson, label: 'Bulk Import', desc: 'Upload CSV of projects', color: 'text-gold' },
@@ -48,7 +48,7 @@ export default async function AdminOverviewPage() {
       </div>
 
       {/* Stats cards */}
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {[
           { icon: CheckCircle2, label: 'Completed', value: completed, color: 'text-teal' },
           { icon: Clock,         label: 'Ongoing',   value: ongoing,   color: 'text-gold' },

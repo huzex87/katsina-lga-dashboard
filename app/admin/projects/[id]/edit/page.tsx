@@ -118,8 +118,8 @@ export default function EditProjectPage() {
         </fieldset>
 
         {/* Category & Ward */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Classification</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Classification</legend>
           <div>
             <label htmlFor="category" className={labelClass}>Category *</label>
             <select id="category" name="category" required defaultValue={defaults.category} className={`${inputClass} cursor-pointer`}>
@@ -138,15 +138,15 @@ export default function EditProjectPage() {
               ))}
             </select>
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <label htmlFor="community" className={labelClass}>Community *</label>
             <input id="community" name="community" required defaultValue={defaults.community} placeholder="e.g. Katsina City Centre" className={inputClass} />
           </div>
         </fieldset>
 
         {/* GPS */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">GPS Coordinates</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">GPS Coordinates</legend>
           <div>
             <label htmlFor="latitude" className={labelClass}>Latitude *</label>
             <input id="latitude" name="latitude" type="number" step="any" required defaultValue={defaults.latitude} placeholder="12.9954" className={inputClass} />
@@ -155,14 +155,14 @@ export default function EditProjectPage() {
             <label htmlFor="longitude" className={labelClass}>Longitude *</label>
             <input id="longitude" name="longitude" type="number" step="any" required defaultValue={defaults.longitude} placeholder="7.6014" className={inputClass} />
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <GpsButton latId="latitude" lngId="longitude" />
           </div>
         </fieldset>
 
         {/* Budget */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Financials (₦)</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Financials (₦)</legend>
           <div>
             <label htmlFor="budget_ngn" className={labelClass}>Budget Allocated *</label>
             <input id="budget_ngn" name="budget_ngn" type="number" step="0.01" required defaultValue={defaults.budget_ngn} placeholder="0.00" className={inputClass} />
@@ -174,8 +174,8 @@ export default function EditProjectPage() {
         </fieldset>
 
         {/* Impact */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Impact</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Impact</legend>
           <div>
             <label htmlFor="beneficiaries" className={labelClass}>Beneficiaries *</label>
             <input id="beneficiaries" name="beneficiaries" type="number" required defaultValue={defaults.beneficiaries} placeholder="0" className={inputClass} />
@@ -184,7 +184,7 @@ export default function EditProjectPage() {
             <label htmlFor="completion_date" className={labelClass}>Completion Date</label>
             <input id="completion_date" name="completion_date" type="date" defaultValue={defaults.completion_date} className={inputClass} />
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <label htmlFor="contractor" className={labelClass}>Contractor</label>
             <input id="contractor" name="contractor" defaultValue={defaults.contractor} placeholder="Contractor name" className={inputClass} />
           </div>
@@ -204,8 +204,8 @@ export default function EditProjectPage() {
         </fieldset>
 
         {/* Status & Published */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Status & Visibility</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Status & Visibility</legend>
           <div>
             <label htmlFor="status" className={labelClass}>Status *</label>
             <select id="status" name="status" required defaultValue={defaults.status} className={`${inputClass} cursor-pointer`}>

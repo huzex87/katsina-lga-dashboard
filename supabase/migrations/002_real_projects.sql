@@ -300,4 +300,5 @@ INSERT INTO projects (ref_code, title_en, title_ha, description_en, description_
   12.9630, 7.6260,
   2000, 5000000, 4750000,
   '2024-11-30', 'completed', FALSE, FALSE
-);
+)
+ON CONFLICT (ref_code) DO NOTHING;

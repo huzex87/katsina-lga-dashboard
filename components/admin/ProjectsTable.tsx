@@ -159,66 +159,73 @@ export function ProjectsTable({ rows }: Props) {
               return (
                 <div
                   key={p.id}
-                  className={`grid grid-cols-1 md:grid-cols-[36px_1fr_120px_140px_110px_80px] gap-2 md:gap-3 px-4 py-3 transition-colors items-center ${
-                    isSelected ? 'bg-teal/[0.06]' : 'hover:bg-white/[0.02]'
-                  }`}
+                  className={`transition-colors ${isSelected ? 'bg-teal/[0.06]' : 'hover:bg-white/[0.02]'}`}
                 >
-                  {/* Checkbox */}
-                  <button
-                    onClick={() => toggleOne(p.id)}
-                    className="hidden md:flex items-center justify-center text-white/25 hover:text-teal transition-colors"
-                    aria-label={isSelected ? `Deselect ${p.title_en}` : `Select ${p.title_en}`}
-                  >
-                    {isSelected
-                      ? <CheckSquare size={15} className="text-teal" />
-                      : <Square size={15} />}
-                  </button>
-
-                  {/* Title */}
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold text-white leading-tight truncate">{p.title_en}</p>
-                    <p className="text-xs text-white/35 mt-0.5 flex items-center gap-2 flex-wrap">
-                      {p.community}
-                      {!p.published && (
-                        <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/15 text-amber-400 border border-amber-500/20">
-                          Draft
-                        </span>
-                      )}
-                    </p>
+                  {/* Mobile card layout */}
+                  <div className="md:hidden flex items-start gap-3 px-4 py-3">
+                    <button
+                      onClick={() => toggleOne(p.id)}
+                      className="flex-shrink-0 mt-0.5 text-white/25 hover:text-teal transition-colors min-w-[32px] min-h-[32px] flex items-center justify-center"
+                      aria-label={isSelected ? `Deselect ${p.title_en}` : `Select ${p.title_en}`}
+                    >
+                      {isSelected ? <CheckSquare size={15} className="text-teal" /> : <Square size={15} />}
+                    </button>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-semibold text-white leading-tight">{p.title_en}</p>
+                      <div className="flex items-center gap-2 mt-1 flex-wrap">
+                        <span
+                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: `${catColor}18`, color: catColor }}
+                        >{catLabel}</span>
+                        <span
+                          className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: status.bg, color: status.color }}
+                        >{status.label}</span>
+                        {!p.published && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/15 text-amber-400 border border-amber-500/20">Draft</span>
+                        )}
+                      </div>
+                      <p className="text-xs text-white/35 mt-0.5">{ward?.name ?? '—'} · {p.community}</p>
+                    </div>
+                    <div className="flex items-center gap-1 flex-shrink-0">
+                      <Link
+                        href={`/admin/projects/${p.id}/edit`}
+                        className="p-2 rounded text-white/30 hover:text-teal hover:bg-teal/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal min-h-[36px] min-w-[36px] flex items-center justify-center"
+                        aria-label={`Edit ${p.title_en}`}
+                      >
+                        <Pencil size={13} />
+                      </Link>
+                      <DeleteProjectButton id={p.id} title={p.title_en} />
+                    </div>
                   </div>
 
-                  {/* Ward */}
-                  <span className="text-xs text-white/50 whitespace-nowrap hidden md:block truncate">
-                    {ward?.name ?? '—'}
-                  </span>
-
-                  {/* Category */}
-                  <span
-                    className="text-[11px] font-semibold px-2 py-1 rounded-full whitespace-nowrap hidden md:inline-block w-fit"
-                    style={{ backgroundColor: `${catColor}18`, color: catColor }}
-                  >
-                    {catLabel}
-                  </span>
-
-                  {/* Status */}
-                  <span
-                    className="text-[11px] font-semibold px-2 py-1 rounded-full whitespace-nowrap hidden md:inline-block w-fit"
-                    style={{ backgroundColor: status.bg, color: status.color }}
-                  >
-                    {status.label}
-                  </span>
-
-                  {/* Actions */}
-                  <div className="flex items-center justify-end gap-1">
-                    <Link
-                      href={`/admin/projects/${p.id}/edit`}
-                      className="p-1.5 rounded text-white/30 hover:text-teal hover:bg-teal/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal min-h-[32px] min-w-[32px] flex items-center justify-center"
-                      title="Edit project"
-                      aria-label={`Edit ${p.title_en}`}
+                  {/* Desktop table row */}
+                  <div className="hidden md:grid grid-cols-[36px_1fr_120px_140px_110px_80px] gap-3 px-4 py-3 items-center">
+                    <button
+                      onClick={() => toggleOne(p.id)}
+                      className="flex items-center justify-center text-white/25 hover:text-teal transition-colors"
+                      aria-label={isSelected ? `Deselect ${p.title_en}` : `Select ${p.title_en}`}
                     >
-                      <Pencil size={13} />
-                    </Link>
-                    <DeleteProjectButton id={p.id} title={p.title_en} />
+                      {isSelected ? <CheckSquare size={15} className="text-teal" /> : <Square size={15} />}
+                    </button>
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-white leading-tight truncate">{p.title_en}</p>
+                      <p className="text-xs text-white/35 mt-0.5 flex items-center gap-2 flex-wrap">
+                        {p.community}
+                        {!p.published && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] bg-amber-500/15 text-amber-400 border border-amber-500/20">Draft</span>
+                        )}
+                      </p>
+                    </div>
+                    <span className="text-xs text-white/50 truncate">{ward?.name ?? '—'}</span>
+                    <span className="text-[11px] font-semibold px-2 py-1 rounded-full w-fit" style={{ backgroundColor: `${catColor}18`, color: catColor }}>{catLabel}</span>
+                    <span className="text-[11px] font-semibold px-2 py-1 rounded-full w-fit" style={{ backgroundColor: status.bg, color: status.color }}>{status.label}</span>
+                    <div className="flex items-center justify-end gap-1">
+                      <Link href={`/admin/projects/${p.id}/edit`} className="p-1.5 rounded text-white/30 hover:text-teal hover:bg-teal/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal min-h-[32px] min-w-[32px] flex items-center justify-center" aria-label={`Edit ${p.title_en}`}>
+                        <Pencil size={13} />
+                      </Link>
+                      <DeleteProjectButton id={p.id} title={p.title_en} />
+                    </div>
                   </div>
                 </div>
               );

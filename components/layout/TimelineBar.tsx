@@ -46,7 +46,7 @@ export function TimelineBar() {
   return (
     <nav
       data-glass=""
-      className="fixed bottom-0 left-0 right-0 md:left-56 z-10"
+      className="fixed bottom-0 left-0 right-0 z-10"
       style={{
         backdropFilter: 'blur(20px) saturate(180%)',
         background: 'var(--surface-deep)',

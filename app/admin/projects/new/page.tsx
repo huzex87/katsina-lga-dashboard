@@ -71,8 +71,8 @@ export default function NewProjectPage() {
         </fieldset>
 
         {/* Category & Ward */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Classification</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Classification</legend>
           <div>
             <label htmlFor="category" className={labelClass}>Category *</label>
             <select id="category" name="category" required className={`${inputClass} cursor-pointer`}>
@@ -91,15 +91,15 @@ export default function NewProjectPage() {
               ))}
             </select>
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <label htmlFor="community" className={labelClass}>Community *</label>
             <input id="community" name="community" required placeholder="e.g. Katsina City Centre" className={inputClass} />
           </div>
         </fieldset>
 
         {/* GPS */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">GPS Coordinates</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">GPS Coordinates</legend>
           <div>
             <label htmlFor="latitude" className={labelClass}>Latitude *</label>
             <input id="latitude" name="latitude" type="number" step="any" required placeholder="12.9954" className={inputClass} />
@@ -108,14 +108,14 @@ export default function NewProjectPage() {
             <label htmlFor="longitude" className={labelClass}>Longitude *</label>
             <input id="longitude" name="longitude" type="number" step="any" required placeholder="7.6014" className={inputClass} />
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <GpsButton latId="latitude" lngId="longitude" />
           </div>
         </fieldset>
 
         {/* Budget */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Financials (₦)</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Financials (₦)</legend>
           <div>
             <label htmlFor="budget_ngn" className={labelClass}>Budget Allocated *</label>
             <input id="budget_ngn" name="budget_ngn" type="number" step="0.01" required placeholder="0.00" className={inputClass} />
@@ -127,8 +127,8 @@ export default function NewProjectPage() {
         </fieldset>
 
         {/* Impact */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Impact</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Impact</legend>
           <div>
             <label htmlFor="beneficiaries" className={labelClass}>Beneficiaries *</label>
             <input id="beneficiaries" name="beneficiaries" type="number" required placeholder="0" className={inputClass} />
@@ -137,7 +137,7 @@ export default function NewProjectPage() {
             <label htmlFor="completion_date" className={labelClass}>Completion Date</label>
             <input id="completion_date" name="completion_date" type="date" className={inputClass} />
           </div>
-          <div className="col-span-2">
+          <div className="sm:col-span-2">
             <label htmlFor="contractor" className={labelClass}>Contractor</label>
             <input id="contractor" name="contractor" placeholder="Contractor name" className={inputClass} />
           </div>
@@ -157,8 +157,8 @@ export default function NewProjectPage() {
         </fieldset>
 
         {/* Status & Published */}
-        <fieldset className="grid grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
-          <legend className="text-sm font-semibold text-white px-1 col-span-2">Status & Visibility</legend>
+        <fieldset className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-5 rounded-xl border border-white/10" style={{ background: 'rgba(255,255,255,0.03)' }}>
+          <legend className="text-sm font-semibold text-white px-1 sm:col-span-2">Status & Visibility</legend>
           <div>
             <label htmlFor="status" className={labelClass}>Status *</label>
             <select id="status" name="status" required defaultValue="completed" className={`${inputClass} cursor-pointer`}>
