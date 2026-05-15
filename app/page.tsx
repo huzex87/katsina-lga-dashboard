@@ -3,16 +3,23 @@ import { FilterSidebar } from '@/components/layout/FilterSidebar';
 import { TimelineBar } from '@/components/layout/TimelineBar';
 import { ProjectDetailPanel } from '@/components/panels/ProjectDetailPanel';
 import { DashboardMapWrapper } from '@/components/map/DashboardMapWrapper';
+import { createClient } from '@/lib/supabase/server';
 import type { Project } from '@/types/project';
+
+export const dynamic = 'force-dynamic';
 
 async function getProjects(): Promise<Project[]> {
   try {
-    const url = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-    const res = await fetch(`${url}/api/projects`, {
-      cache: 'no-store',
-    });
-    if (!res.ok) return DEMO_PROJECTS;
-    return res.json();
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from('projects')
+      .select('*, ward:wards(id, name, name_ha)')
+      .eq('published', true)
+      .order('completion_date', { ascending: false })
+      .limit(500);
+
+    if (error || !data) return DEMO_PROJECTS;
+    return data as unknown as Project[];
   } catch {
     return DEMO_PROJECTS;
   }
@@ -40,7 +47,7 @@ export default async function DashboardPage() {
   );
 }
 
-// Demo data — real Katsina LGA wards (Arewa A/B · Gabas I/II · Kudu I/II/III · Yamma I/II · Shinkafi A/B)
+// Demo data — shown only when Supabase is unreachable
 const DEMO_PROJECTS: Project[] = [
   {
     id: '1', ref_code: 'KTLGA-RDS-2025-001',
