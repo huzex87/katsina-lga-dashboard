@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { X, MapPin, Users, Calendar, Banknote, TrendingUp, Copy, ExternalLink, Share2, Globe } from 'lucide-react';
+import { X, MapPin, Users, Calendar, Banknote, TrendingUp, Copy, ExternalLink, Share2 } from 'lucide-react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ImageCarousel } from './ImageCarousel';
 import { CertificateButton } from './CertificateButton';
 import { formatNaira, formatCoords, formatDate } from '@/lib/utils';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types/project';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Project } from '@/types/project';
 
 export function ProjectDetailPanel() {
@@ -150,6 +151,9 @@ function PanelContent({
 }) {
   const catColor = CATEGORY_COLORS[project.category];
   const catLabel = CATEGORY_LABELS[project.category];
+  const { t } = useLanguage();
+  const title = t(project.title_en, project.title_ha);
+  const description = t(project.description_en, project.description_ha);
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
@@ -170,12 +174,7 @@ function PanelContent({
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: catColor }} />
             {catLabel}
           </span>
-          <h2 className="text-sm font-bold text-white leading-snug line-clamp-2">{project.title_en}</h2>
-          {project.title_ha && (
-            <p className="text-xs mt-0.5 font-medium line-clamp-1" style={{ color: `${catColor}cc` }}>
-              {project.title_ha}
-            </p>
-          )}
+          <h2 className="text-sm font-bold text-white leading-snug line-clamp-2">{title}</h2>
         </div>
         <button
           ref={closeButtonRef}
@@ -253,18 +252,9 @@ function PanelContent({
           </div>
 
           {/* Description */}
-          {project.description_en && (
+          {description && (
             <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
-              <p className="text-xs text-white/65 leading-relaxed">{project.description_en}</p>
-              {project.description_ha && (
-                <details className="mt-2">
-                  <summary className="text-xs text-teal cursor-pointer select-none hover:text-teal-light transition-colors">
-                    <Globe size={10} className="inline mr-1" />
-                    Hausa / Harshen Hausa
-                  </summary>
-                  <p className="text-xs text-white/55 mt-1.5 leading-relaxed">{project.description_ha}</p>
-                </details>
-              )}
+              <p className="text-xs text-white/65 leading-relaxed">{description}</p>
             </div>
           )}
 

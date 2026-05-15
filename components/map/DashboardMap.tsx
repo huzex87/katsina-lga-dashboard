@@ -8,6 +8,8 @@ import { useDashboardStore } from '@/store/dashboardStore';
 import { ProjectPin } from './ProjectPin';
 import { WardHeatmap } from './WardHeatmap';
 import { WardProjectsList } from './WardProjectsList';
+import { MapLegend } from './MapLegend';
+import { MapSearch } from './MapSearch';
 import { INITIAL_VIEWPORT, MAP_STYLE, MAPBOX_TOKEN } from '@/lib/mapbox/config';
 import {
   wardFillLayer, wardOutlineLayer, wardLabelLayer,
@@ -191,6 +193,9 @@ export function DashboardMap({ projects }: Props) {
 
   return (
     <div className="relative w-full h-full">
+      {/* Floating search bar */}
+      <MapSearch />
+
       <Map
         ref={mapRef}
         mapboxAccessToken={MAPBOX_TOKEN}
@@ -301,6 +306,9 @@ export function DashboardMap({ projects }: Props) {
           />
         )}
       </AnimatePresence>
+
+      {/* Map legend */}
+      <MapLegend />
     </div>
   );
 }

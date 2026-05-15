@@ -5,6 +5,7 @@ import { X, ChevronRight, MapPin } from 'lucide-react';
 import { CATEGORY_COLORS, CATEGORY_LABELS } from '@/types/project';
 import { formatNaira } from '@/lib/utils';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Project } from '@/types/project';
 
 interface Props {
@@ -15,6 +16,7 @@ interface Props {
 
 export function WardProjectsList({ wardName, projects, onClose }: Props) {
   const { selectProject } = useDashboardStore();
+  const { t } = useLanguage();
 
   const handleProjectClick = (project: Project) => {
     selectProject(project.id);
@@ -27,7 +29,7 @@ export function WardProjectsList({ wardName, projects, onClose }: Props) {
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: 12, scale: 0.97 }}
       transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-      className="absolute bottom-20 left-4 z-20 w-72 rounded-xl overflow-hidden shadow-2xl"
+      className="absolute bottom-36 md:bottom-20 left-4 z-20 w-72 rounded-xl overflow-hidden shadow-2xl"
       style={{
         backdropFilter: 'blur(20px)',
         background: 'rgba(10,22,40,0.96)',
@@ -79,7 +81,7 @@ export function WardProjectsList({ wardName, projects, onClose }: Props) {
                 />
                 <div className="flex-1 min-w-0">
                   <p className="text-xs font-semibold text-white/90 group-hover:text-white leading-tight line-clamp-2 transition-colors">
-                    {project.title_en}
+                    {t(project.title_en, project.title_ha)}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span

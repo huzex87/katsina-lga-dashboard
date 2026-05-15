@@ -23,6 +23,8 @@ export function ProjectPin({ project, entranceDelay = 0, onClick }: Props) {
 
   const pinColor = CATEGORY_COLORS[project.category];
   const size = isSelected ? 36 : hovered ? 32 : 28;
+  const isOngoing = project.status === 'ongoing';
+  const isPlanning = project.status === 'planning';
 
   useEffect(() => {
     if (prefersReduced) { setVisible(true); return; }
@@ -41,14 +43,14 @@ export function ProjectPin({ project, entranceDelay = 0, onClick }: Props) {
         {visible && (
           <motion.button
             initial={prefersReduced ? {} : { scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
+            animate={{ scale: 1, opacity: isPlanning ? 0.55 : 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
             className="relative flex items-center justify-center cursor-pointer focus:outline-none"
             style={{ width: size + 20, height: size + 20 }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
-            aria-label={`${project.title_en} — ${project.ward.name}. Click to view details.`}
+            aria-label={`${project.title_en} — ${project.ward.name} (${project.status}). Click to view details.`}
             aria-pressed={isSelected}
           >
             {/* Pulse ring */}
@@ -58,6 +60,21 @@ export function ProjectPin({ project, entranceDelay = 0, onClick }: Props) {
                 style={{ backgroundColor: pinColor, width: size, height: size }}
                 animate={{ scale: [1, 2.4], opacity: [0.5, 0] }}
                 transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
+              />
+            )}
+
+            {/* Ongoing: animated gold dashed ring */}
+            {isOngoing && !isSelected && !prefersReduced && (
+              <motion.span
+                className="absolute rounded-full"
+                style={{
+                  width: size + 8,
+                  height: size + 8,
+                  border: '2px dashed #F5A623',
+                  opacity: 0.8,
+                }}
+                animate={{ rotate: 360 }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
               />
             )}
 

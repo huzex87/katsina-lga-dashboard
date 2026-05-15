@@ -11,21 +11,21 @@ CREATE TABLE IF NOT EXISTS wards (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Seed the 12 wards
+-- Seed the 12 official wards (IDs match katsina-wards.geojson feature IDs)
 INSERT INTO wards (id, name, name_ha) VALUES
-  (1, 'Ward 1', 'Ungwa ta 1'),
-  (2, 'Ward 2', 'Ungwa ta 2'),
-  (3, 'Ward 3', 'Ungwa ta 3'),
-  (4, 'Ward 4', 'Ungwa ta 4'),
-  (5, 'Ward 5', 'Ungwa ta 5'),
-  (6, 'Ward 6', 'Ungwa ta 6'),
-  (7, 'Ward 7', 'Ungwa ta 7'),
-  (8, 'Ward 8', 'Ungwa ta 8'),
-  (9, 'Ward 9', 'Ungwa ta 9'),
-  (10, 'Ward 10', 'Ungwa ta 10'),
-  (11, 'Ward 11', 'Ungwa ta 11'),
-  (12, 'Ward 12', 'Ungwa ta 12')
-ON CONFLICT (id) DO NOTHING;
+  (1,  'Arewa A',    'Arewa A'),
+  (2,  'Arewa B',    'Arewa B'),
+  (3,  'Gabas I',    'Gabas I'),
+  (4,  'Gabas II',   'Gabas II'),
+  (5,  'Gabas III',  'Gabas III'),
+  (6,  'Kudu I',     'Kudu I'),
+  (7,  'Kudu II',    'Kudu II'),
+  (8,  'Kudu III',   'Kudu III'),
+  (9,  'Yamma I',    'Yamma I'),
+  (10, 'Yamma II',   'Yamma II'),
+  (11, 'Shinkafi A', 'Shinkafi A'),
+  (12, 'Shinkafi B', 'Shinkafi B')
+ON CONFLICT (id) DO UPDATE SET name = EXCLUDED.name, name_ha = EXCLUDED.name_ha;
 
 -- Projects table
 CREATE TABLE IF NOT EXISTS projects (
@@ -92,85 +92,85 @@ CREATE POLICY "admin_write"
 CREATE POLICY "public_read_wards" ON wards FOR SELECT TO anon USING (TRUE);
 CREATE POLICY "admin_write_wards" ON wards FOR ALL TO authenticated USING (TRUE);
 
--- Seed demo projects
-INSERT INTO projects (ref_code, title_en, title_ha, description_en, category, ward_id, community, latitude, longitude, beneficiaries, budget_ngn, expenditure_ngn, completion_date, status, published) VALUES
+-- Seed demo projects (budget_ngn stored in Naira, NOT kobo)
+INSERT INTO projects (ref_code, title_en, title_ha, description_en, category, ward_id, community, latitude, longitude, beneficiaries, budget_ngn, expenditure_ngn, completion_date, status, featured, published) VALUES
 (
-  'KTLGA-RDS-2024-001',
-  'Katsina Central Road Rehabilitation',
-  'Gyaran Hanya ta Tsakiyar Katsina',
-  'Complete rehabilitation of 5km central road with new drainage system, street lighting, and pedestrian walkways.',
-  'roads', 1, 'Katsina City Centre',
+  'KTLGA-RDS-2025-001',
+  'Nagogo Road Rehabilitation & Drainage Upgrade',
+  'Gyaran Hanyar Nagogo da Tsabtace Rafin Ruwa',
+  'Full rehabilitation of 6.5km Nagogo Road including road widening, drainage channels, streetlighting, and pedestrian walkways along the LGA Secretariat corridor.',
+  'roads', 11, 'Katsina City Centre',
   12.9954, 7.6014,
-  15000, 2500000000, 2350000000,
-  '2024-06-15', 'completed', TRUE
+  18000, 32000000000, 30400000000,
+  '2025-03-15', 'completed', TRUE, TRUE
 ),
 (
-  'KTLGA-WTR-2024-002',
-  'Community Borehole & Water Supply — Dutsin-Ma',
-  'Rijiyar Burtsatse da Samar da Ruwa',
-  'Construction of solar-powered borehole with distribution network serving 3,500 residents.',
-  'water', 2, 'Dutsin-Ma',
-  13.0154, 7.6214,
-  3500, 800000000, 780000000,
-  '2024-03-20', 'completed', TRUE
+  'KTLGA-WTR-2025-002',
+  'Solar-Powered Borehole & Water Distribution Network',
+  'Rijiyar Burtsatse da Samar da Ruwa ta Hasken Rana',
+  'Solar-powered borehole with 50,000-litre overhead tank serving 5 communities in Arewa A ward through a reticulated pipe network.',
+  'water', 1, 'Unguwar Rimi',
+  13.0320, 7.5980,
+  5200, 9500000000, 9200000000,
+  '2025-01-20', 'completed', FALSE, TRUE
 ),
 (
-  'KTLGA-HLT-2023-003',
-  'Primary Health Centre Renovation — Mashi Ward',
-  'Sabunta Cibiyar Lafiya',
-  'Full renovation and equipment upgrade including maternity ward, pharmacy, and consultation rooms.',
-  'health', 3, 'Mashi',
-  12.9754, 7.5814,
-  8200, 1200000000, 1190000000,
-  '2023-11-30', 'completed', TRUE
+  'KTLGA-HLT-2024-003',
+  'Gabas Primary Health Centre Renovation & Equipment',
+  'Sabunta Cibiyar Lafiya ta Gabas da Kayan Aiki',
+  'Complete renovation of the Gabas PHC with new maternity ward, laboratory equipment, solar power system, and medical waste disposal facility.',
+  'health', 3, 'Unguwar Gabas',
+  12.9900, 7.6450,
+  9500, 14000000000, 13800000000,
+  '2024-11-30', 'completed', TRUE, TRUE
 ),
 (
-  'KTLGA-EDU-2023-004',
-  'New Classroom Blocks — Government Secondary School Kaita',
-  'Sabbin Dakunan Karatu',
-  '6 new classroom blocks with modern furniture, toilets, and a computer lab for 1,200 students.',
-  'education', 4, 'Kaita',
-  13.0354, 7.6414,
-  1200, 1500000000, 1450000000,
-  '2023-09-01', 'completed', TRUE
+  'KTLGA-EDU-2024-004',
+  'Government Secondary School — 8 New Classroom Blocks',
+  NULL,
+  '8 new classroom blocks with ICT laboratory, library, sanitation facilities, and perimeter fence at Government Secondary School, Kudu ward.',
+  'education', 6, 'Unguwar Kudu',
+  12.9680, 7.6120,
+  2400, 18000000000, 17200000000,
+  '2024-09-01', 'completed', FALSE, TRUE
 ),
 (
-  'KTLGA-AGR-2024-005',
-  'Farmers Support & Input Distribution Program',
-  'Taimakon Manoma da Rarraba Kayan Aikin Noma',
-  'Distribution of improved seeds, fertilizers, and farming tools to 2,500 registered smallholder farmers.',
-  'agric', 5, 'Rimi',
-  12.9554, 7.5614,
-  2500, 600000000, 590000000,
-  '2024-01-15', 'completed', TRUE
+  'KTLGA-AGR-2025-005',
+  'Farmers Input & Irrigation Support Programme',
+  'Shirin Tallafin Manoma da Ban Ruwa',
+  'Distribution of high-yield seeds, fertilisers, herbicides, and drip irrigation kits to 3,800 registered smallholder farmers across Yamma ward.',
+  'agric', 9, 'Unguwar Yamma',
+  13.0020, 7.5720,
+  3800, 7500000000, 7100000000,
+  '2025-02-15', 'completed', FALSE, TRUE
 ),
 (
-  'KTLGA-YTH-2024-006',
-  'Multi-Purpose Youth Sports Complex',
-  'Filin Wasanni na Matasa',
-  'Modern sports complex with standard football pitch, basketball courts, indoor gym, and changing rooms.',
-  'youth', 6, 'Kusada',
-  13.0554, 7.6614,
-  5000, 2000000000, 1950000000,
-  '2024-08-20', 'completed', TRUE
+  'KTLGA-YTH-2025-006',
+  'Shinkafi Youth Multi-Purpose Sports & Skills Complex',
+  'Cibiyar Wasanni da Sana''a ta Samari ta Shinkafi',
+  'Modern sports complex with football pitch, basketball court, gymnasium, digital skills hub, and vocational training centre serving youth across Shinkafi ward.',
+  'youth', 12, 'Shinkafi',
+  13.0060, 7.6180,
+  6500, 22000000000, 21500000000,
+  '2025-04-10', 'completed', TRUE, TRUE
 ),
 (
-  'KTLGA-SEC-2023-005',
-  'Community Security Post Construction',
-  'Gina Ofishin Tsaro na Al''umma',
-  'Construction of 4 community security outposts with communication equipment and staff quarters.',
-  'security', 7, 'Batagarawa',
-  13.0054, 7.5414,
-  12000, 450000000, 430000000,
-  '2023-07-10', 'completed', TRUE
+  'KTLGA-RDS-2025-007',
+  'Arewa Intra-Ward Road Network Paving',
+  NULL,
+  'Interlocking paving of 12 streets within Arewa B ward improving all-season access and reducing flood damage to properties.',
+  'roads', 2, 'Unguwar Arewa',
+  13.0420, 7.6130,
+  7200, 11000000000, 10500000000,
+  '2025-03-28', 'completed', FALSE, TRUE
 ),
 (
-  'KTLGA-RDS-2023-006',
-  'Rural Feeder Road Construction — Ingawa',
-  'Gina Hanyar Kauye ta Ingawa',
-  'Construction of 8km feeder road connecting rural farming communities to the main market.',
-  'roads', 8, 'Ingawa',
-  12.9254, 7.5214,
-  6500, 1800000000, 1750000000,
-  '2023-05-22', 'completed', TRUE
+  'KTLGA-WTR-2024-008',
+  'Kudu Ward Sanitation & Public Toilet Facilities',
+  NULL,
+  'Construction of 6 modern public toilet and handwashing stations across Kudu II ward markets and public spaces, serving over 4,000 daily users.',
+  'water', 7, 'Kudu Market Area',
+  12.9720, 7.6250,
+  4100, 5500000000, 5300000000,
+  '2024-12-15', 'completed', FALSE, TRUE
 );

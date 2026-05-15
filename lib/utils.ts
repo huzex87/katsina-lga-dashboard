@@ -5,16 +5,14 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatNaira(kobo: number): string {
-  const naira = kobo / 100;
+export function formatNaira(naira: number): string {
   if (naira >= 1_000_000_000) return `₦${(naira / 1_000_000_000).toFixed(1)}B`;
   if (naira >= 1_000_000) return `₦${(naira / 1_000_000).toFixed(1)}M`;
   if (naira >= 1_000) return `₦${(naira / 1_000).toFixed(1)}K`;
   return `₦${naira.toLocaleString()}`;
 }
 
-export function formatNairaFull(kobo: number): string {
-  const naira = kobo / 100;
+export function formatNairaFull(naira: number): string {
   return `₦${naira.toLocaleString('en-NG')}`;
 }
 

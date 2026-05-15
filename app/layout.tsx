@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Inter, Noto_Sans } from 'next/font/google';
 import './globals.css';
+import { LanguageProvider } from '@/contexts/LanguageContext';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -29,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={`${inter.variable} ${notoSans.variable}`}>
       <body className="font-sans bg-navy text-white antialiased">
-        {children}
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   );

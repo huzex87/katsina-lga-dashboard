@@ -5,11 +5,13 @@ import { BarChart3, MapPin, Users, Landmark, TrendingUp } from 'lucide-react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { formatNaira, computeStats, animateCounter } from '@/lib/utils';
 import { useReducedMotion } from 'framer-motion';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export function TopBar() {
   const projects = useDashboardStore((s) => s.projects);
   const filters = useDashboardStore((s) => s.filters);
   const prefersReduced = useReducedMotion();
+  const { lang, toggle } = useLanguage();
 
   const visibleProjects = projects.filter(
     (p) =>
@@ -113,10 +115,21 @@ export function TopBar() {
         {/* Language toggle */}
         <div className="flex-shrink-0">
           <button
-            className="text-xs px-3 py-2.5 rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-teal/40 hover:bg-teal/5 transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer"
-            aria-label="Toggle language between English and Hausa"
+            onClick={toggle}
+            className="text-xs px-3 py-2.5 rounded-lg border transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer font-semibold tabular-nums"
+            style={lang === 'ha' ? {
+              background: 'rgba(29,155,138,0.12)',
+              border: '1px solid rgba(29,155,138,0.35)',
+              color: '#25C4AE',
+            } : {
+              background: 'transparent',
+              border: '1px solid rgba(255,255,255,0.10)',
+              color: 'rgba(255,255,255,0.50)',
+            }}
+            aria-label={lang === 'en' ? 'Switch to Hausa language' : 'Switch to English language'}
+            aria-pressed={lang === 'ha'}
           >
-            EN / HA
+            {lang === 'en' ? 'EN' : 'HA'}
           </button>
         </div>
       </div>

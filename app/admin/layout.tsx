@@ -1,5 +1,9 @@
+'use client';
+
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { LayoutDashboard, FolderOpen, Upload, LogOut, ChevronRight } from 'lucide-react';
+import { createClient } from '@/lib/supabase/client';
 
 const navItems = [
   { href: '/admin', label: 'Overview', icon: LayoutDashboard, exact: true },
@@ -8,6 +12,15 @@ const navItems = [
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+    router.refresh();
+  };
+
   return (
     <div className="min-h-screen bg-navy flex">
       {/* Sidebar */}
@@ -32,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
           ))}
         </nav>
-        <div className="p-3 border-t border-white/10">
+        <div className="p-3 border-t border-white/10 space-y-1">
           <Link
             href="/"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/30 hover:text-white/60 transition-colors min-h-[44px]"
@@ -40,6 +53,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <LogOut size={15} />
             <span>View Public Site</span>
           </Link>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-white/20 hover:text-red-pin hover:bg-red-pin/10 transition-colors min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-red-pin"
+          >
+            <LogOut size={15} />
+            <span>Sign out</span>
+          </button>
         </div>
       </aside>
 
