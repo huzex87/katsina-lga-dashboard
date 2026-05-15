@@ -9,7 +9,7 @@ async function getProjects(): Promise<Project[]> {
   try {
     const url = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const res = await fetch(`${url}/api/projects`, {
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
     if (!res.ok) return DEMO_PROJECTS;
     return res.json();

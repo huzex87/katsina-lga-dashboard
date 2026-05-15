@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
 
 interface Params {
@@ -42,6 +43,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
+  revalidatePath('/');
+  revalidatePath('/admin/projects');
   return NextResponse.json(data);
 }
 
@@ -54,5 +57,7 @@ export async function DELETE(_: NextRequest, { params }: Params) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 
+  revalidatePath('/');
+  revalidatePath('/admin/projects');
   return new NextResponse(null, { status: 204 });
 }
