@@ -40,7 +40,7 @@ export function TopBar() {
     { icon: BarChart3,  label: 'Projects',     fullLabel: 'Total Projects',      value: displayStats.total.toString(),              color: '#1D9B8A' },
     { icon: MapPin,     label: 'Communities',  fullLabel: 'Communities Served',  value: displayStats.communities.toString(),         color: '#25C4AE' },
     { icon: Landmark,   label: 'Investment',   fullLabel: 'Total Investment',    value: formatNaira(displayStats.investment),        color: '#F5A623' },
-    { icon: Users,      label: 'Wards',        fullLabel: 'Wards Covered',       value: `${displayStats.wardsCovered}/12`,           color: '#FFFFFF' },
+    { icon: Users,      label: 'Wards',        fullLabel: 'Wards Covered',       value: `${displayStats.wardsCovered}/12`,          color: '#FFFFFF' },
   ];
 
   return (
