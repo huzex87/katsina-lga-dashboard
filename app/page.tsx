@@ -35,8 +35,8 @@ export default async function DashboardPage() {
       <div className="flex h-full pt-14 pb-14">
         <FilterSidebar />
 
-        {/* Map canvas — fills remaining space */}
-        <div className="flex-1 md:ml-56 relative min-h-0 h-full">
+        {/* Map canvas — full width, sidebar floats over it */}
+        <div className="absolute inset-0 pt-14 pb-14 w-full">
           <DashboardMapWrapper projects={projects} />
         </div>
       </div>

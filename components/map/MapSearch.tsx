@@ -38,7 +38,7 @@ export function MapSearch() {
   };
 
   return (
-    <div className="absolute top-3 left-1/2 -translate-x-1/2 z-20 w-full max-w-xs sm:max-w-sm px-3 sm:px-0">
+    <div className="absolute top-3 left-1/2 md:left-[calc(50%+7rem)] -translate-x-1/2 z-20 w-full max-w-xs sm:max-w-sm px-3 sm:px-0">
       <div className="relative">
         {/* Input */}
         <div
