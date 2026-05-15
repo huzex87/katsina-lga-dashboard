@@ -3,9 +3,9 @@ export const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN!;
 export const MAP_STYLE = 'mapbox://styles/mapbox/dark-v11';
 
 export const INITIAL_VIEWPORT = {
-  latitude: 12.9954,
-  longitude: 7.6014,
-  zoom: 11.5,
+  latitude: 12.998,
+  longitude: 7.615,
+  zoom: 11.2,
   pitch: 0,
   bearing: 0,
 };
