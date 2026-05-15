@@ -5,7 +5,7 @@ export const MAP_STYLE = 'mapbox://styles/mapbox/dark-v11';
 export const INITIAL_VIEWPORT = {
   latitude: 12.998,
   longitude: 7.615,
-  zoom: 11.2,
+  zoom: 10.7,
   pitch: 0,
   bearing: 0,
 };
