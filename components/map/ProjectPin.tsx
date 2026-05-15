@@ -1,11 +1,11 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Marker } from 'react-map-gl/mapbox';
 import type { MarkerEvent } from 'react-map-gl/mapbox';
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion';
-import { getPinColor } from '@/lib/mapbox/config';
 import { useDashboardStore } from '@/store/dashboardStore';
+import { CATEGORY_COLORS } from '@/types/project';
 import type { Project } from '@/types/project';
 
 interface Props {
@@ -21,7 +21,7 @@ export function ProjectPin({ project, entranceDelay = 0, onClick }: Props) {
   const { filters } = useDashboardStore();
   const isSelected = filters.selectedProjectId === project.id;
 
-  const pinColor = getPinColor(1); // per-location logic; single project = teal
+  const pinColor = CATEGORY_COLORS[project.category];
   const size = isSelected ? 36 : hovered ? 32 : 28;
 
   useEffect(() => {
@@ -40,45 +40,64 @@ export function ProjectPin({ project, entranceDelay = 0, onClick }: Props) {
       <AnimatePresence>
         {visible && (
           <motion.button
-            initial={prefersReduced ? false : { scale: 0, opacity: 0 }}
+            initial={prefersReduced ? {} : { scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 400, damping: 25 }}
-            className="relative flex items-center justify-center cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-transparent"
-            style={{ width: size + 16, height: size + 16 }}
+            className="relative flex items-center justify-center cursor-pointer focus:outline-none"
+            style={{ width: size + 20, height: size + 20 }}
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
             aria-label={`${project.title_en} — ${project.ward.name}. Click to view details.`}
             aria-pressed={isSelected}
           >
-            {/* Pulse ring - not shown with reduced motion */}
-            {!prefersReduced && (
+            {/* Pulse ring */}
+            {!prefersReduced && !isSelected && (
               <motion.span
                 className="absolute rounded-full"
-                style={{ backgroundColor: pinColor }}
-                animate={{ scale: [1, 2.2], opacity: [0.6, 0] }}
-                transition={{ duration: 2.2, repeat: Infinity, ease: 'easeOut' }}
+                style={{ backgroundColor: pinColor, width: size, height: size }}
+                animate={{ scale: [1, 2.4], opacity: [0.5, 0] }}
+                transition={{ duration: 2.4, repeat: Infinity, ease: 'easeOut' }}
+              />
+            )}
+
+            {/* Selected glow ring */}
+            {isSelected && (
+              <motion.span
+                className="absolute rounded-full"
+                style={{
+                  width: size + 10,
+                  height: size + 10,
+                  border: `2px solid ${pinColor}`,
+                  boxShadow: `0 0 16px ${pinColor}80`,
+                }}
+                initial={{ scale: 0.8, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 20 }}
               />
             )}
 
             {/* Pin body */}
             <motion.span
-              className="relative flex items-center justify-center rounded-full font-bold text-white shadow-lg border-2 border-white/30 text-xs z-10"
+              className="relative flex items-center justify-center rounded-full border-2 border-white/25 z-10"
               style={{
                 backgroundColor: pinColor,
                 width: size,
                 height: size,
-                fontSize: size > 30 ? '12px' : '10px',
                 boxShadow: isSelected
-                  ? `0 0 0 3px white, 0 0 20px ${pinColor}80`
+                  ? `0 0 0 2px white, 0 0 24px ${pinColor}90`
                   : hovered
-                  ? `0 4px 20px ${pinColor}60`
-                  : `0 2px 8px ${pinColor}40`,
+                  ? `0 4px 20px ${pinColor}70`
+                  : `0 2px 10px ${pinColor}50`,
               }}
-              animate={{ scale: hovered ? 1.15 : 1 }}
+              animate={{ scale: hovered && !isSelected ? 1.12 : 1 }}
               transition={{ type: 'spring', stiffness: 500, damping: 30 }}
             >
-              1
+              {/* Inner dot */}
+              <span
+                className="rounded-full bg-white/40"
+                style={{ width: Math.round(size * 0.28), height: Math.round(size * 0.28) }}
+              />
             </motion.span>
           </motion.button>
         )}

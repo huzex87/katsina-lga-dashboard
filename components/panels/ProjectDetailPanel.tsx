@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useCallback } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { X, MapPin, Users, Calendar, Copy, ExternalLink, Share2, Globe } from 'lucide-react';
+import { X, MapPin, Users, Calendar, Banknote, TrendingUp, Copy, ExternalLink, Share2, Globe } from 'lucide-react';
 import { useDashboardStore } from '@/store/dashboardStore';
 import { ImageCarousel } from './ImageCarousel';
 import { CertificateButton } from './CertificateButton';
-import { formatNaira, formatNairaFull, formatCoords, formatDate } from '@/lib/utils';
+import { formatNaira, formatCoords, formatDate } from '@/lib/utils';
 import { CATEGORY_LABELS, CATEGORY_COLORS } from '@/types/project';
 import type { Project } from '@/types/project';
 
@@ -17,7 +17,6 @@ export function ProjectDetailPanel() {
   const prefersReduced = useReducedMotion();
   const open = selectedProject !== null;
 
-  // Focus trap and Escape key handling
   useEffect(() => {
     if (!open) return;
     const prev = document.activeElement as HTMLElement;
@@ -63,21 +62,19 @@ export function ProjectDetailPanel() {
     : 0;
 
   const panelVariants = {
-    // Desktop: slide from right
-    hiddenDesktop: { x: '100%', opacity: 0 },
+    hiddenDesktop:  { x: '100%', opacity: 0 },
     visibleDesktop: { x: 0, opacity: 1, transition: { duration: prefersReduced ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] } },
-    exitDesktop: { x: '100%', opacity: 0, transition: { duration: prefersReduced ? 0 : 0.22, ease: [0.36, 0, 0.66, 0] as [number,number,number,number] } },
-    // Mobile: slide from bottom
-    hiddenMobile: { y: '100%', opacity: 0 },
-    visibleMobile: { y: 0, opacity: 1, transition: { duration: prefersReduced ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] } },
-    exitMobile: { y: '100%', opacity: 0, transition: { duration: prefersReduced ? 0 : 0.22, ease: [0.36, 0, 0.66, 0] as [number,number,number,number] } },
+    exitDesktop:    { x: '100%', opacity: 0, transition: { duration: prefersReduced ? 0 : 0.22, ease: [0.36, 0, 0.66, 0] as [number,number,number,number] } },
+    hiddenMobile:   { y: '100%', opacity: 0 },
+    visibleMobile:  { y: 0, opacity: 1, transition: { duration: prefersReduced ? 0 : 0.38, ease: [0.22, 1, 0.36, 1] as [number,number,number,number] } },
+    exitMobile:     { y: '100%', opacity: 0, transition: { duration: prefersReduced ? 0 : 0.22, ease: [0.36, 0, 0.66, 0] as [number,number,number,number] } },
   };
 
   return (
     <AnimatePresence>
       {open && selectedProject && (
         <>
-          {/* Backdrop for mobile */}
+          {/* Backdrop — mobile */}
           <motion.div
             className="fixed inset-0 bg-black/40 z-30 md:hidden"
             initial={{ opacity: 0 }}
@@ -94,7 +91,7 @@ export function ProjectDetailPanel() {
             aria-modal="true"
             aria-label={`Project details: ${selectedProject.title_en}`}
             className="hidden md:flex fixed right-0 top-0 h-full w-[340px] flex-col z-40 overflow-hidden border-l border-white/10 shadow-2xl"
-            style={{ backdropFilter: 'blur(20px)', background: 'rgba(15,31,58,0.92)' }}
+            style={{ backdropFilter: 'blur(20px)', background: 'rgba(15,31,58,0.94)' }}
             variants={panelVariants}
             initial="hiddenDesktop"
             animate="visibleDesktop"
@@ -117,14 +114,13 @@ export function ProjectDetailPanel() {
             aria-modal="true"
             aria-label={`Project details: ${selectedProject.title_en}`}
             className="md:hidden fixed bottom-0 left-0 right-0 h-[65vh] flex flex-col z-40 rounded-t-2xl overflow-hidden border-t border-white/10 shadow-2xl"
-            style={{ backdropFilter: 'blur(20px)', background: 'rgba(15,31,58,0.95)' }}
+            style={{ backdropFilter: 'blur(20px)', background: 'rgba(15,31,58,0.97)' }}
             variants={panelVariants}
             initial="hiddenMobile"
             animate="visibleMobile"
             exit="exitMobile"
           >
-            {/* Drag handle */}
-            <div className="flex justify-center pt-3 pb-1">
+            <div className="flex justify-center pt-3 pb-1 flex-shrink-0" aria-hidden="true">
               <div className="w-10 h-1 rounded-full bg-white/20" />
             </div>
             <PanelContent
@@ -157,28 +153,37 @@ function PanelContent({
 
   return (
     <div className="flex flex-col h-full overflow-hidden">
+      {/* Category colour stripe */}
+      <div
+        className="h-1 w-full flex-shrink-0"
+        style={{ background: `linear-gradient(90deg, ${catColor}, ${catColor}60, transparent)` }}
+        aria-hidden="true"
+      />
+
       {/* Header */}
       <div className="flex items-start justify-between px-4 py-3 border-b border-white/10 flex-shrink-0">
         <div className="flex-1 min-w-0 pr-3">
           <span
             className="inline-flex items-center gap-1.5 text-xs font-semibold px-2 py-0.5 rounded-full mb-2"
-            style={{ backgroundColor: `${catColor}20`, color: catColor, border: `1px solid ${catColor}40` }}
+            style={{ backgroundColor: `${catColor}18`, color: catColor, border: `1px solid ${catColor}35` }}
           >
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: catColor }} />
             {catLabel}
           </span>
           <h2 className="text-sm font-bold text-white leading-snug line-clamp-2">{project.title_en}</h2>
           {project.title_ha && (
-            <p className="text-xs text-teal-light mt-0.5 font-medium line-clamp-1">{project.title_ha}</p>
+            <p className="text-xs mt-0.5 font-medium line-clamp-1" style={{ color: `${catColor}cc` }}>
+              {project.title_ha}
+            </p>
           )}
         </div>
         <button
           ref={closeButtonRef}
           onClick={onClose}
-          className="flex-shrink-0 w-8 h-8 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+          className="flex-shrink-0 w-9 h-9 flex items-center justify-center rounded-lg bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
           aria-label="Close project detail panel"
         >
-          <X size={16} />
+          <X size={15} />
         </button>
       </div>
 
@@ -187,75 +192,85 @@ function PanelContent({
         {/* Image carousel */}
         <ImageCarousel images={project.images} beforeImages={project.before_images} title={project.title_en} />
 
-        {/* Metadata */}
         <div className="px-4 py-3 space-y-3">
           {/* Location */}
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2.5 rounded-lg px-3 py-2.5" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
             <MapPin size={14} className="text-teal mt-0.5 flex-shrink-0" />
-            <div>
-              <p className="text-xs text-white/50 uppercase tracking-wide">Location</p>
-              <p className="text-sm text-white font-medium">{project.ward.name}</p>
-              <p className="text-xs text-white/60">{project.community}</p>
+            <div className="min-w-0">
+              <p className="text-xs text-white/45 uppercase tracking-wide mb-0.5">Location</p>
+              <p className="text-sm text-white font-semibold leading-tight">{project.ward.name}</p>
+              <p className="text-xs text-white/55">{project.community}</p>
             </div>
           </div>
 
-          {/* Beneficiaries & Date */}
-          <div className="grid grid-cols-2 gap-3">
-            <div className="rounded-lg p-2.5" style={{ background: 'rgba(29,155,138,0.1)', border: '1px solid rgba(29,155,138,0.2)' }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <Users size={12} className="text-teal" />
-                <span className="text-xs text-white/50">Beneficiaries</span>
-              </div>
-              <p className="text-sm font-bold text-white">{project.beneficiaries.toLocaleString()}</p>
-            </div>
-            <div className="rounded-lg p-2.5" style={{ background: 'rgba(245,166,35,0.08)', border: '1px solid rgba(245,166,35,0.2)' }}>
-              <div className="flex items-center gap-1.5 mb-1">
-                <Calendar size={12} className="text-gold" />
-                <span className="text-xs text-white/50">Completed</span>
-              </div>
-              <p className="text-sm font-bold text-white">{formatDate(project.completion_date)}</p>
-            </div>
+          {/* 2×2 stats grid */}
+          <div className="grid grid-cols-2 gap-2">
+            <StatCard
+              icon={<Users size={12} style={{ color: '#1D9B8A' }} />}
+              label="Beneficiaries"
+              value={project.beneficiaries.toLocaleString()}
+              accent="#1D9B8A"
+            />
+            <StatCard
+              icon={<Calendar size={12} style={{ color: '#F5A623' }} />}
+              label="Completed"
+              value={formatDate(project.completion_date)}
+              accent="#F5A623"
+            />
+            <StatCard
+              icon={<Banknote size={12} style={{ color: catColor }} />}
+              label="Total Budget"
+              value={formatNaira(project.budget_ngn)}
+              accent={catColor}
+            />
+            <StatCard
+              icon={<TrendingUp size={12} style={{ color: budgetPercent >= 90 ? '#1D9B8A' : '#F5A623' }} />}
+              label="Utilised"
+              value={`${budgetPercent}%`}
+              accent={budgetPercent >= 90 ? '#1D9B8A' : '#F5A623'}
+            />
           </div>
 
-          {/* Budget */}
+          {/* Budget bar */}
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs">
-              <span className="text-white/50">Budget utilisation</span>
-              <span className="text-white font-medium">{budgetPercent}%</span>
+              <span className="text-white/45">Budget utilisation</span>
+              <span className="text-white font-semibold tabular-nums">{budgetPercent}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
+            <div className="h-2 rounded-full overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
               <motion.div
-                className="h-full rounded-full bg-teal"
+                className="h-full rounded-full"
+                style={{ background: `linear-gradient(90deg, ${catColor}, ${catColor}cc)` }}
                 initial={{ width: 0 }}
                 animate={{ width: `${budgetPercent}%` }}
-                transition={{ duration: 0.8, ease: 'easeOut', delay: 0.2 }}
+                transition={{ duration: 0.9, ease: 'easeOut', delay: 0.15 }}
               />
             </div>
-            <div className="flex justify-between text-xs text-white/50">
-              <span>Spent: <span className="text-white">{formatNaira(project.expenditure_ngn)}</span></span>
-              <span>Budget: <span className="text-white">{formatNaira(project.budget_ngn)}</span></span>
+            <div className="flex justify-between text-xs text-white/40">
+              <span>Spent: <span className="text-white/75">{formatNaira(project.expenditure_ngn)}</span></span>
+              <span>Budget: <span className="text-white/75">{formatNaira(project.budget_ngn)}</span></span>
             </div>
           </div>
 
           {/* Description */}
           {project.description_en && (
-            <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-              <p className="text-xs text-white/70 leading-relaxed">{project.description_en}</p>
+            <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+              <p className="text-xs text-white/65 leading-relaxed">{project.description_en}</p>
               {project.description_ha && (
                 <details className="mt-2">
                   <summary className="text-xs text-teal cursor-pointer select-none hover:text-teal-light transition-colors">
                     <Globe size={10} className="inline mr-1" />
                     Hausa / Harshen Hausa
                   </summary>
-                  <p className="text-xs text-white/60 mt-1.5 leading-relaxed">{project.description_ha}</p>
+                  <p className="text-xs text-white/55 mt-1.5 leading-relaxed">{project.description_ha}</p>
                 </details>
               )}
             </div>
           )}
 
           {/* GPS coordinates */}
-          <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}>
-            <p className="text-xs text-white/50 mb-1.5 uppercase tracking-wide">GPS Coordinates</p>
+          <div className="rounded-lg p-3" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.07)' }}>
+            <p className="text-xs text-white/40 mb-1.5 uppercase tracking-wide">GPS Coordinates</p>
             <div className="flex items-center justify-between gap-2">
               <code className="text-xs text-teal-light font-mono">
                 {formatCoords(project.latitude, project.longitude)}
@@ -263,7 +278,7 @@ function PanelContent({
               <div className="flex gap-1.5">
                 <button
                   onClick={onCopyCoords}
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
                   aria-label="Copy GPS coordinates"
                 >
                   <Copy size={13} />
@@ -272,7 +287,7 @@ function PanelContent({
                   href={`https://maps.google.com/?q=${project.latitude},${project.longitude}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md bg-white/5 hover:bg-white/10 text-white/60 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                  className="min-w-[44px] min-h-[44px] flex items-center justify-center rounded-md bg-white/5 hover:bg-white/10 text-white/50 hover:text-white transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
                   aria-label="Open in Google Maps"
                 >
                   <ExternalLink size={13} />
@@ -281,27 +296,48 @@ function PanelContent({
             </div>
           </div>
 
-          {/* Contractor */}
           {project.contractor && (
-            <p className="text-xs text-white/50">
-              Contractor: <span className="text-white/80">{project.contractor}</span>
+            <p className="text-xs text-white/40 px-1">
+              Contractor: <span className="text-white/70">{project.contractor}</span>
             </p>
           )}
         </div>
       </div>
 
-      {/* Footer actions */}
+      {/* Footer */}
       <div className="px-4 py-3 border-t border-white/10 flex-shrink-0 space-y-2">
         <CertificateButton project={project} />
         <button
           onClick={onShare}
-          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium text-white/70 hover:text-white border border-white/10 hover:border-white/20 hover:bg-white/5 transition-all min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+          className="w-full flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white border border-white/10 hover:border-white/25 hover:bg-white/5 transition-all min-h-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
           aria-label="Copy share link for this project"
         >
           <Share2 size={14} />
           Share Project
         </button>
       </div>
+    </div>
+  );
+}
+
+function StatCard({
+  icon, label, value, accent,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+  accent: string;
+}) {
+  return (
+    <div
+      className="rounded-lg p-2.5"
+      style={{ background: `${accent}0d`, border: `1px solid ${accent}25` }}
+    >
+      <div className="flex items-center gap-1.5 mb-1">
+        {icon}
+        <span className="text-[10px] text-white/45 uppercase tracking-wide">{label}</span>
+      </div>
+      <p className="text-sm font-bold text-white leading-tight">{value}</p>
     </div>
   );
 }

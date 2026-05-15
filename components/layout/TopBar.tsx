@@ -37,10 +37,10 @@ export function TopBar() {
   }, [stats.total, stats.communities, stats.investment, stats.wardsCovered, prefersReduced]);
 
   const items = [
-    { icon: BarChart3, label: 'Projects', fullLabel: 'Total Projects', value: displayStats.total.toString(), color: 'text-teal' },
-    { icon: MapPin, label: 'Communities', fullLabel: 'Communities Served', value: displayStats.communities.toString(), color: 'text-teal-light' },
-    { icon: Landmark, label: 'Investment', fullLabel: 'Total Investment', value: formatNaira(displayStats.investment), color: 'text-gold' },
-    { icon: Users, label: 'Wards', fullLabel: 'Wards Covered', value: `${displayStats.wardsCovered}/12`, color: 'text-white' },
+    { icon: BarChart3,  label: 'Projects',     fullLabel: 'Total Projects',      value: displayStats.total.toString(),              color: '#1D9B8A' },
+    { icon: MapPin,     label: 'Communities',  fullLabel: 'Communities Served',  value: displayStats.communities.toString(),         color: '#25C4AE' },
+    { icon: Landmark,   label: 'Investment',   fullLabel: 'Total Investment',    value: formatNaira(displayStats.investment),        color: '#F5A623' },
+    { icon: Users,      label: 'Wards',        fullLabel: 'Wards Covered',       value: `${displayStats.wardsCovered}/12`,           color: '#FFFFFF' },
   ];
 
   return (
@@ -48,7 +48,14 @@ export function TopBar() {
       className="fixed top-0 left-0 right-0 z-20 border-b border-white/10"
       style={{ backdropFilter: 'blur(16px)', background: 'rgba(10,22,40,0.92)' }}
     >
-      {/* Skip to main content — visible on focus for keyboard users */}
+      {/* Teal accent line */}
+      <div
+        className="absolute top-0 left-0 right-0 h-[2px]"
+        style={{ background: 'linear-gradient(90deg, #1D9B8A 0%, #25C4AE 40%, transparent 100%)' }}
+        aria-hidden="true"
+      />
+
+      {/* Skip to main content */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:px-4 focus:py-2 focus:bg-teal focus:text-white focus:rounded-lg focus:text-sm focus:font-semibold"
@@ -61,7 +68,10 @@ export function TopBar() {
         <div className="flex items-center gap-2.5 flex-shrink-0">
           <div
             className="flex items-center justify-center w-8 h-8 rounded-lg border border-teal/30 flex-shrink-0"
-            style={{ background: 'rgba(29,155,138,0.15)' }}
+            style={{
+              background: 'rgba(29,155,138,0.15)',
+              boxShadow: '0 0 12px rgba(29,155,138,0.25)',
+            }}
             aria-hidden="true"
           >
             <TrendingUp size={15} className="text-teal" />
@@ -84,10 +94,11 @@ export function TopBar() {
               className="flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg border border-white/[0.06] flex-shrink-0"
               style={{ background: 'rgba(255,255,255,0.04)' }}
             >
-              <Icon size={13} className={color} aria-hidden="true" />
+              <Icon size={13} aria-hidden="true" style={{ color }} />
               <div>
                 <p
-                  className={`text-sm font-bold tabular-nums leading-none ${color}`}
+                  className="text-sm font-bold tabular-nums leading-none"
+                  style={{ color }}
                   aria-live="polite"
                   aria-label={`${fullLabel}: ${value}`}
                 >
@@ -102,7 +113,7 @@ export function TopBar() {
         {/* Language toggle */}
         <div className="flex-shrink-0">
           <button
-            className="text-xs px-3 py-2.5 rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-white/25 hover:bg-white/5 transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer"
+            className="text-xs px-3 py-2.5 rounded-lg border border-white/10 text-white/50 hover:text-white hover:border-teal/40 hover:bg-teal/5 transition-all min-h-[44px] min-w-[44px] focus:outline-none focus-visible:ring-2 focus-visible:ring-teal cursor-pointer"
             aria-label="Toggle language between English and Hausa"
           >
             EN / HA
