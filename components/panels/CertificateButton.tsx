@@ -18,7 +18,8 @@ export function CertificateButton({ project }: Props) {
     try {
       const { generateCertificate } = await import('@/lib/certificate/generator');
       const pdfBytes = await generateCertificate(project);
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const safeBuf = pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength) as ArrayBuffer;
+      const blob = new Blob([safeBuf], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -29,7 +30,8 @@ export function CertificateButton({ project }: Props) {
       URL.revokeObjectURL(url);
       setState('done');
       setTimeout(() => setState('idle'), 3000);
-    } catch {
+    } catch (err) {
+      console.error('[Certificate] generation failed:', err);
       setState('error');
       setTimeout(() => setState('idle'), 3000);
     }
