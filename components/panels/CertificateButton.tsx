@@ -11,14 +11,19 @@ interface Props {
 
 export function CertificateButton({ project }: Props) {
   const [state, setState] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
+  const [errorMsg, setErrorMsg] = useState('');
 
   const handleGenerate = async () => {
     if (state === 'loading') return;
     setState('loading');
+    setErrorMsg('');
     try {
       const { generateCertificate } = await import('@/lib/certificate/generator');
       const pdfBytes = await generateCertificate(project);
-      const safeBuf = pdfBytes.buffer.slice(pdfBytes.byteOffset, pdfBytes.byteOffset + pdfBytes.byteLength) as ArrayBuffer;
+      const safeBuf = pdfBytes.buffer.slice(
+        pdfBytes.byteOffset,
+        pdfBytes.byteOffset + pdfBytes.byteLength,
+      ) as ArrayBuffer;
       const blob = new Blob([safeBuf], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -31,13 +36,15 @@ export function CertificateButton({ project }: Props) {
       setState('done');
       setTimeout(() => setState('idle'), 3000);
     } catch (err) {
-      console.error('[Certificate] generation failed:', err);
+      const msg = err instanceof Error ? err.message : String(err);
+      setErrorMsg(msg);
       setState('error');
       setTimeout(() => setState('idle'), 3000);
     }
   };
 
   return (
+    <>
     <motion.button
       onClick={handleGenerate}
       disabled={state === 'loading'}
@@ -78,5 +85,9 @@ export function CertificateButton({ project }: Props) {
         ? 'Try again'
         : 'Download Certificate'}
     </motion.button>
+    {state === 'error' && errorMsg && (
+      <p className="text-[10px] text-red-400 text-center mt-1 px-1 leading-tight">{errorMsg}</p>
+    )}
+    </>
   );
 }
